@@ -14,17 +14,18 @@
     <body>
         
         <script src="three.min.js"></script>
-        
+		<script src="OrbitControls.js"></script>
         <script>
             
-            var cameraPerspective, cameraOrtho, cameraFrogg, scene, renderer, composer;
+            var cameraPerspective, cameraOrtho, cameraFrogg, cameraRotation, scene, renderer, composer;
             var mesh;
             var cars = [];
             var directionalOn = true;
             var pointLightOn = true;
             var spotLightOn = true;
-            
-            
+            var fogOn = false;
+			
+            var object_frogger;
             var movementSpeed = 50;
             var totalObjects = 1000;
             var objectSize = 10;
@@ -37,19 +38,27 @@
             mapLimit = 1000;
             
             init();
-            animate();
-            
+            animate();           
+
+			var controls;
+			
+			function render() {
+
+				renderer.render( scene, activeCamera );
+
+			}
+			
             function init() {
                 
                 scene = new THREE.Scene();
                 
-                
                 //Renderer
                 
-                renderer = new THREE.WebGLRenderer();
+                renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true });
                 renderer.setSize( window.innerWidth, window.innerHeight );
                 document.body.appendChild( renderer.domElement );
                 
+				
                 //CAMERAS-----------------------------------------------------------------------------------------------------------------------------------
                 
                 cameraPerspective = new THREE.PerspectiveCamera( 25, window.innerWidth / window.innerHeight, 1, 4000);
@@ -58,10 +67,7 @@
                 cameraPerspective.rotation.x = Math.PI;
                 cameraPerspective.up = new THREE.Vector3(0,0,1);
                 cameraPerspective.lookAt(new THREE.Vector3(0,0,-300));
-                
-                //controls = new THREE.OrbitControls( cameraPerspective );
-                //controls.damping = 0.2;
-                //controls.addEventListener( 'change', animate );
+           
                 
                 scene.add(cameraPerspective);
                 
@@ -73,11 +79,13 @@
                 cameraFrogg = new THREE.PerspectiveCamera( 25, window.innerWidth / window.innerHeight, 1, 4000);
                 
                 scene.add(cameraFrogg);
+				
+				cameraRotation = new THREE.PerspectiveCamera( 25, window.innerWidth / window.innerHeight, 1, 4000);
+                
+                scene.add(cameraRotation);
 
 
                 activeCamera = cameraOrtho;
-                
-                
                 
                 //OBJECTS / MATERIALS---------------------------------------------------------------------------------------------------------------------
                 
@@ -165,11 +173,11 @@
                 //Billboards
                 
                var tree = new THREE.BoxGeometry(400, 400, 5);
-               var materialTree =new THREE.MeshPhongMaterial( { transparent: true, ambient: 0xFFFFFF, color: 0xFFFFFF, specular: 0xFFFFFF, shininess: 30, shading: THREE.SmoothShading, map: THREE.ImageUtils.loadTexture('textures/tree.png')} );
+               var materialTree =new THREE.MeshPhongMaterial( { transparent: true, ambient: 0xFFFFFF, color: 0xFFFFFF, specular: 0xFFFFFF, shininess: 100, shading: THREE.SmoothShading, map: THREE.ImageUtils.loadTexture('textures/tree.png')} );
                object_Tree1 = new THREE.Mesh( tree, materialTree);
                
                object_Tree1.position.z = -100;
-               object_Tree1.position.y = 950;
+               object_Tree1.position.y = 150;
                object_Tree1.position.x = 325;
                object_Tree1.rotation.x = Math.PI/2;
             
@@ -178,14 +186,17 @@
                object_Tree2 = new THREE.Mesh( tree, materialTree);
                
                object_Tree2.position.z = -100;
-               object_Tree2.position.y = 950;
+               object_Tree2.position.y = 150;
                object_Tree2.position.x = -325;
                object_Tree2.rotation.x = Math.PI/2;
                
                scene.add(object_Tree2);
 
                 
-            
+                controls = new THREE.OrbitControls( cameraRotation );
+				controls.damping = 0.2;
+				controls.addEventListener( 'change', render );
+				
                 //LIGHTS---------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -266,41 +277,84 @@
                spotLight.exponent = 0;
                
                scene.add(spotLight);
+			   
+			   //LENS FLARE
+			   
+			   
+				var textureFlare0 = THREE.ImageUtils.loadTexture( "textures/lensflare0.png" );
+				var textureFlare2 = THREE.ImageUtils.loadTexture( "textures/lensflare2.png" );
+				var textureFlare3 = THREE.ImageUtils.loadTexture( "textures/lensflare3.png" );
+				
+				addLight( 0.55, 0.9, 0.5, 0, 500, -100 );
+				
+				function addLight( h, s, l, x, y, z ) {
+					var light = new THREE.PointLight( 0xffffff, 1.5, 4500 );
+					light.color.setHSL( h, s, l );
+					light.position.set( x, y, z );
+					scene.add( light );
+					var flareColor = new THREE.Color( 0xffffff );
+					flareColor.setHSL( h, s, l + 0.5 );
+					var lensFlare = new THREE.LensFlare( textureFlare0, 700, 0.0, THREE.AdditiveBlending, flareColor );
+					lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+					lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+					lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+					lensFlare.add( textureFlare3, 60, 0.6, THREE.AdditiveBlending );
+					lensFlare.add( textureFlare3, 70, 0.7, THREE.AdditiveBlending );
+					lensFlare.add( textureFlare3, 120, 0.9, THREE.AdditiveBlending );
+					lensFlare.add( textureFlare3, 70, 1.0, THREE.AdditiveBlending );
+					lensFlare.customUpdateCallback = lensFlareUpdateCallback;
+					lensFlare.position.copy( light.position );
+					scene.add( lensFlare );
+				}
                
                initCars();
                
             
                 window.addEventListener( 'resize', onWindowResize, false);
                 window.addEventListener('keydown', checkKeyPressed, false);
-                window.addEventListener( 'mousedown', onclick, false );
                 
             }
         
+		 function lensFlareUpdateCallback( object ) {
+				var f, fl = object.lensFlares.length;
+				var flare;
+				var vecX = -object.positionScreen.x * 2;
+				var vecY = -object.positionScreen.y * 2;
+				for( f = 0; f < fl; f++ ) {
+					   flare = object.lensFlares[ f ];
+					   flare.x = object.positionScreen.x + vecX * flare.distance;
+					   flare.y = object.positionScreen.y + vecY * flare.distance;
+					   flare.rotation = 0;
+				}
+				object.lensFlares[ 2 ].y += 0.025;
+				object.lensFlares[ 3 ].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad( 45 );
+			}
+			
         function checkKeyPressed(e) {
             switch(e.keyCode){
-                case 87:
-                //W
+                case 81:
+                //Q
                 if(object_frogger.position.y < mapLimit -100){
                     object_frogger.position.y += 100;
                     object_helper.position.y += 100;
                 }
                 break;
-                case 65:
-                //A
+                case 79:
+                //O
                 if(object_frogger.position.x  > -mapLimit/2){
                     object_frogger.position.x -= 50;
                     object_helper.position.x -= 50;
                 }
                 break;
-                case 83:
-                //S
+                case 65:
+                //A
                 if(object_frogger.position.y  > - mapLimit  + 200){
                     object_frogger.position.y -= 100;
                     object_helper.position.y -= 100;
                 }
                 break;
-                case 68:
-                //D
+                case 80:
+                //P
                 if(object_frogger.position.x  < mapLimit/2){
                     object_frogger.position.x += 50;
                     object_helper.position.x += 50;
@@ -317,7 +371,12 @@
                 case 51:
                 //3
                 activeCamera = cameraFrogg;
+				break;
+				//4
+				case 52:
+				activeCamera = cameraRotation;
                 case 67:
+				//C
                 if(pointLightOn == true){
                     pointLightOn = false;
                     scene.remove(light1);
@@ -337,6 +396,7 @@
                 }
                 break;
                 case 78:
+				//N
                 if(directionalOn == true){
                     directionalOn = false;
                     scene.remove(directionalLight);
@@ -345,7 +405,8 @@
                     scene.add(directionalLight);
                 }
                 break;
-                case 70:
+                case 83:
+				//S
                 if(spotLightOn == true){
                     spotLightOn = false;
                     scene.remove(spotLight);
@@ -354,6 +415,13 @@
                     scene.add(spotLight);
                 }
                 break;
+				case 70:
+				if(fogOn){
+				scene.fog = new THREE.FogExp2( 0xa5a5a5, 0.0025 );
+				fogOn = false;
+				}
+				else{fogOn = true;
+				scene.fog = new THREE.FogExp2( 0xa5a5a5, 0.0 );}
             }
         }
         
@@ -363,6 +431,8 @@
             activeCamera.updateProjectionMatrix();
             
             renderer.setSize( window.innerWidth, window.innerHeight );
+			
+			render();
             
         }
         
@@ -416,24 +486,34 @@
         function animate() {
             
             requestAnimationFrame( animate );
-            
+			
+	
+			
             cameraFrogg.position.z = -250;
             cameraFrogg.position.y = object_frogger.position.y;
             cameraFrogg.position.x = object_frogger.position.x;
             cameraFrogg.up = new THREE.Vector3(0,1,0);
             cameraFrogg.lookAt(new THREE.Vector3(object_frogger.position.x,object_frogger.position.y+800,object_frogger.position.z-100));
-        
+			
+			cameraRotation.position.z = -250;
+            cameraRotation.position.y = object_frogger.position.y;
+            cameraRotation.position.x = object_frogger.position.x;
+            cameraRotation.up = new THREE.Vector3(0,0,1);
+            cameraRotation.lookAt(new THREE.Vector3(object_frogger.position.x,object_frogger.position.y+800,object_frogger.position.z-100));
+        	controls.update();
+			
             spotLight.position.set( object_frogger.position.x, object_frogger.position.y, -285 );
             
             spotLight.target = object_helper;
             
-            if(activeCamera == cameraPerspective | activeCamera == cameraFrogg){
-                object_Tree1.rotation.setFromRotationMatrix( activeCamera.matrix );
-                object_Tree2.rotation.setFromRotationMatrix( activeCamera.matrix );
-            }
+			//billboarding
+
+            object_Tree1.rotation.setFromRotationMatrix( activeCamera.matrix );
+            object_Tree2.rotation.setFromRotationMatrix( activeCamera.matrix );
+           
             
             updateCars();
-            
+			
             var pCount = parts.length;
             while(pCount--) {
                 parts[pCount].update();
@@ -443,7 +523,7 @@
             object_box.position.z += 0.005;
             
             
-            renderer.render( scene, activeCamera );
+            render();
         }
         
         
