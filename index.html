@@ -36,11 +36,31 @@
             var parts = [];
             
             mapLimit = 1000;
+
+            var totalLifes = 5;
+            var totalPoints = 0;
             
             init();
             animate();           
 
 			var controls;
+
+ 
+      function BB() {
+        this.vecMin = [0,0,0];
+        this.vecMax = [0,0,0];
+      }
+
+      BB.prototype.collide = function(b) {
+        //Check if Box1's max is greater than Box2's min and Box1's min is less than Box2's max (if they collide)
+          return(this.vecMax[0] > b.vecMin[0] && 
+          this.vecMin[0] < b.vecMax[0] &&
+          this.vecMax[1] > b.vecMin[1] &&
+          this.vecMin[1] < b.vecMax[1] &&
+          this.vecMax[2] > b.vecMin[2] &&
+          this.vecMin[2] < b.vecMax[2]);
+        //If not, it will return false
+      };
 			
 			function render() {
 
@@ -157,6 +177,7 @@
                 object_frogger.rotation.z = Math.PI;
                 object_frogger.position.z = -275;
                 object_frogger.position.y = -800;
+                object_frogger.bb = new BB();
                 
 
                 scene.add(object_frogger);
@@ -313,7 +334,48 @@
                 window.addEventListener( 'resize', onWindowResize, false);
                 window.addEventListener('keydown', checkKeyPressed, false);
                 
-            }
+            }    ///TERMINA INIT
+
+
+         function checkCollisions(){
+            for (var i=0; i < numCars; i++) {
+                    if(frog.bb.collide(cars1[i].bb)){takeLifes()}
+              if(frog.bb.collide(cars2[i].bb)){takeLifes()}
+                }
+            for (var i=0; i < numBuses; i++) {
+                    if(frog.bb.collide(buses[i].bb)){takeLifes()}
+                }
+        
+       /* //if on the river
+        var col = true;
+        if(frog.y > 0 && frog.y < 25){
+          
+          for (var i=0; i < numTurtles; i++) {
+            if(frog.bb.collide(turtles1[i].bb)){col = true; break;} else {col = false;}
+          }
+          if(!col) takeLifes();
+          
+          for (var i=0; i < numTurtles; i++) {
+            if(!frog.bb.collide(turtles2[i].bb)){col = true; break;} else {col = false;}
+          }
+          if(!col) takeLifes();
+          
+          for (var i=0; i < numLogs; i++) {
+            if(!frog.bb.collide(logs1[i].bb)){col = true; break;} else {col = false;}
+          }
+          if(!col) takeLifes();
+          
+          for (var i=0; i < numLogs; i++) {
+            if(!frog.bb.collide(logs2[i].bb)){col = true; break;} else {col = false;}
+          }
+          if(!col) takeLifes();
+        }
+        
+        if(frog.y >= 25){
+          frog.reset();
+          addPoints();
+          }*/
+      }       
         
 		 function lensFlareUpdateCallback( object ) {
 				var f, fl = object.lensFlares.length;
@@ -423,6 +485,9 @@
 				else{fogOn = true;
 				scene.fog = new THREE.FogExp2( 0xa5a5a5, 0.0 );}
             }
+
+            object_frogger.bb.vecMin = [object_frogger.position.x-150, object_frogger.position.y-300, object_frogger.position.z-1];
+            object_frogger.bb.vecMax = [object_frogger.position.x+150, object_frogger.position.y+300, object_frogger.position.z+1];
         }
         
         function onWindowResize() {
@@ -524,6 +589,8 @@
             
             
             render();
+
+            checkCollisions();
         }
         
         
@@ -589,6 +656,7 @@
         
         
     </script>
-        
+
+
     </body>
 </html>
