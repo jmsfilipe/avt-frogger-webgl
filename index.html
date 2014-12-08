@@ -37,6 +37,8 @@
             
             mapLimit = 1000;
 
+            var numCars = 15;
+
             var totalLifes = 5;
             var totalPoints = 0;
             
@@ -49,6 +51,12 @@
       function BB() {
         this.vecMin = [0,0,0];
         this.vecMax = [0,0,0];
+      }
+
+      function takeLifes(){
+        frog.reset();
+        totalLifes = totalLifes - 1;
+        document.getElementById("lifes").innerHTML=totalLifes;
       }
 
       BB.prototype.collide = function(b) {
@@ -339,12 +347,12 @@
 
          function checkCollisions(){
             for (var i=0; i < numCars; i++) {
-                    if(frog.bb.collide(cars1[i].bb)){takeLifes()}
-              if(frog.bb.collide(cars2[i].bb)){takeLifes()}
+                    if(object_frogger.bb.collide(object_car[i].bb)){takeLifes()}
+              if(object_frogger.bb.collide(cars[i].bb)){takeLifes()}
                 }
-            for (var i=0; i < numBuses; i++) {
+           /* for (var i=0; i < numBuses; i++) {
                     if(frog.bb.collide(buses[i].bb)){takeLifes()}
-                }
+                } */
         
        /* //if on the river
         var col = true;
@@ -604,6 +612,8 @@
                 object_car.rotation.z = Math.PI;
                 object_car.position.z = -275;
                 object_car.moving = 0;
+                object_car.bb = new BB();
+
                  //Lane1
                  if(i <= 2){
                      object_car.position.y = -575;
@@ -651,6 +661,10 @@
                         scene.add(car);
                     }
                 }
+
+                car.bb.vecMin = [car.position.x-1, car.position.y-1];
+                car.bb.vecMax = [car.position.x+1, car.position.y+1];
+
             }
         }
         
