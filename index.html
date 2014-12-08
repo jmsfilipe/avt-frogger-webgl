@@ -1,47 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>Frogger WebGL</title>
-        <meta charset="utf-8">
-            <style>
-                body {
-                    margin: 0px;
-                    background-color: #000000;
-                    overflow: hidden;
-                }
-            </style>
-            </head>
-    <body>
-        
-        <script src="three.min.js"></script>
+  <head>
+    <title>Frogger WebGL</title>
+    <meta charset="utf-8">
+      <style>
+          body {
+              margin: 0px;
+              background-color: #000000;
+              overflow: hidden;
+          }
+      </style>
+  </head>
+  <body>
+    <script src="three.min.js"></script>
 		<script src="OrbitControls.js"></script>
-        <script>
-            
-            var cameraPerspective, cameraOrtho, cameraFrogg, cameraRotation, scene, renderer, composer;
-            var mesh;
-            var cars = [];
-            var directionalOn = true;
-            var pointLightOn = true;
-            var spotLightOn = true;
-            var fogOn = false;
-			
-            var object_frogger;
-            var movementSpeed = 50;
-            var totalObjects = 1000;
-            var objectSize = 10;
-            var sizeRandomness = 1000;
-            var colors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
-            /////////////////////////////////
-            var dirs = [];
-            var parts = [];
-            
-            mapLimit = 1000;
 
-            var totalLifes = 5;
-            var totalPoints = 0;
-            
-            init();
-            animate();           
+    <script>      
+      var cameraPerspective, cameraOrtho, cameraFrogg, cameraRotation, scene, renderer, composer;
+      var mesh;
+      var cars = [];
+      var directionalOn = true;
+      var pointLightOn = true;
+      var spotLightOn = true;
+      var fogOn = false;
+
+      var object_frogger;
+      var movementSpeed = 50;
+      var totalObjects = 1000;
+      var objectSize = 10;
+      var sizeRandomness = 1000;
+      var particlesColors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
+      /////////////////////////////////
+      var dirs = [];
+      var parts = [];
+      
+      mapLimit = 1000;
+
+      var totalLifes = 5;
+      var totalPoints = 0;
+      
+      init();
+      animate();           
 
 			var controls;
 
@@ -63,288 +62,254 @@
       };
 			
 			function render() {
-
 				renderer.render( scene, activeCamera );
-
 			}
 			
-            function init() {
-                
-                scene = new THREE.Scene();
-                
-                //Renderer
-                
-                renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true });
-                renderer.setSize( window.innerWidth, window.innerHeight );
-                document.body.appendChild( renderer.domElement );
-                
-				
-                //CAMERAS-----------------------------------------------------------------------------------------------------------------------------------
-                
-                cameraPerspective = new THREE.PerspectiveCamera( 25, window.innerWidth / window.innerHeight, 1, 4000);
-                cameraPerspective.position.z = 200; //800
-                cameraPerspective.position.y = -2000; //-2800
-                cameraPerspective.rotation.x = Math.PI;
-                cameraPerspective.up = new THREE.Vector3(0,0,1);
-                cameraPerspective.lookAt(new THREE.Vector3(0,0,-300));
-           
-                
-                scene.add(cameraPerspective);
-                
+      function init() {
+          
+          scene = new THREE.Scene();
+          
+          //Renderer
+          
+          renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true });
+          renderer.setSize( window.innerWidth, window.innerHeight );
+          document.body.appendChild( renderer.domElement );
+          
+	
+          //CAMERAS-----------------------------------------------------------------------------------------------------------------------------------
+          cameraPerspective = new THREE.PerspectiveCamera( 25, window.innerWidth / window.innerHeight, 1, 4000);
+          cameraPerspective.position.z = 200; //800
+          cameraPerspective.position.y = -2000; //-2800
+          cameraPerspective.rotation.x = Math.PI;
+          cameraPerspective.up = new THREE.Vector3(0,0,1);
+          cameraPerspective.lookAt(new THREE.Vector3(0,0,-300));
+          scene.add(cameraPerspective);
+          
+          cameraOrtho = new THREE.OrthographicCamera(-1000, 1000, 1000, -1000, -1000, 1000);
+          scene.add(cameraOrtho);
+          
+          cameraFrogg = new THREE.PerspectiveCamera( 25, window.innerWidth / window.innerHeight, 1, 4000);
+          scene.add(cameraFrogg);
+	
+	        cameraRotation = new THREE.PerspectiveCamera( 25, window.innerWidth / window.innerHeight, 1, 4000);                
+          scene.add(cameraRotation);
 
-                cameraOrtho = new THREE.OrthographicCamera(-1000, 1000, 1000, -1000, -1000, 1000);
-                
-                scene.add(cameraOrtho);
-                
-                cameraFrogg = new THREE.PerspectiveCamera( 25, window.innerWidth / window.innerHeight, 1, 4000);
-                
-                scene.add(cameraFrogg);
-				
-				cameraRotation = new THREE.PerspectiveCamera( 25, window.innerWidth / window.innerHeight, 1, 4000);
-                
-                scene.add(cameraRotation);
-
-
-                activeCamera = cameraOrtho;
-                
-                //OBJECTS / MATERIALS---------------------------------------------------------------------------------------------------------------------
-                
-                var boxGeo= new THREE.BoxGeometry( 200, 200, 200 );
-                
-                var texture = THREE.ImageUtils.loadTexture( 'textures/crate.png' );
-                texture.anisotropy = renderer.getMaxAnisotropy();
-                
-                
-                object_box = new THREE.Mesh( boxGeo, new THREE.MeshBasicMaterial( { map: texture } ) );
-                //scene.add( object_box );
-                
-                
-                //River
-                var river = new THREE.BoxGeometry(1050, 600, 5);
-                
-                var material = new THREE.MeshPhongMaterial( { ambient: 0x0000ff, specular: 0x0000b2, shininess: 30, shading: THREE.SmoothShading, map: THREE.ImageUtils.loadTexture('textures/water2.jpg'), blending : THREE.AdditiveBlending, transparent: true} );
-                
-                var object_River = new THREE.Mesh( river, material);
+          activeCamera = cameraOrtho;
+          
+          //OBJECTS / MATERIALS---------------------------------------------------------------------------------------------------------------------
+          var boxGeo= new THREE.BoxGeometry( 200, 200, 200 );
+          
+          var texture = THREE.ImageUtils.loadTexture( 'textures/crate.png' );
+          texture.anisotropy = renderer.getMaxAnisotropy();
+          
+          
+          object_box = new THREE.Mesh( boxGeo, new THREE.MeshBasicMaterial( { map: texture } ) );
+          
+          
+          //River
+          var river = new THREE.BoxGeometry(1050, 600, 5);
+          
+          var material = new THREE.MeshPhongMaterial( { ambient: 0x0000ff, specular: 0x0000b2, shininess: 30, shading: THREE.SmoothShading, map: THREE.ImageUtils.loadTexture('textures/water2.jpg'), blending : THREE.AdditiveBlending, transparent: true} );
+          
+          var object_River = new THREE.Mesh( river, material);
 
 
-                object_River.rotation.z = Math.PI;
-                object_River.position.z = -300;
-                object_River.position.y = 450;
-                scene.add(object_River);
-                
-                //Grass
-                var grass_End = new THREE.BoxGeometry(1050, 200, 5);
-                var object_grass_End = new THREE.Mesh( grass_End, new THREE.MeshPhongMaterial( { ambient: 0x006600, specular: 0x005900, shininess: 30, shading: THREE.SmoothShading, map: THREE.ImageUtils.loadTexture('textures/grass.jpg')  } ) );
-                
-                object_grass_End.rotation.z = Math.PI;
-                object_grass_End.position.z = -300;
-                object_grass_End.position.y = 850;
-                scene.add(object_grass_End);
- 
-                //SafeSpot
- 
-                var SafeSpot = new THREE.BoxGeometry(1050, 200, 5);
-                var object_safespot = new THREE.Mesh( SafeSpot, new THREE.MeshPhongMaterial( { ambient: 0x845321, specular: 0x73481d, shininess: 30, shading: THREE.SmoothShading, map: THREE.ImageUtils.loadTexture('textures/sidewalk.jpg')  } ) );
-                object_safespot.rotation.z = Math.PI;
-                object_safespot.position.z = -300;
-                object_safespot.position.y = 50;
-                scene.add(object_safespot);
-                
-                //Road
-                
-                var road = new THREE.BoxGeometry(1050, 600, 5);
-                var object_Road = new THREE.Mesh( road, new THREE.MeshPhongMaterial( { ambient: 0x666666, specular: 0x595959, shininess: 30, shading: THREE.SmoothShading, map: THREE.ImageUtils.loadTexture('textures/road.jpg') } ) );
-                object_Road.rotation.z = Math.PI;
-                object_Road.position.z = -300;
-                object_Road.position.y = -350;
-                scene.add(object_Road);
-                
-                //Start
-                
-                var start = new THREE.BoxGeometry(1050, 200, 5);
-                object_Start = new THREE.Mesh( start, new THREE.MeshPhongMaterial( { ambient: 0x006600, specular: 0x005900, shininess: 30, shading: THREE.SmoothShading, map: THREE.ImageUtils.loadTexture('textures/grass.jpg')  } ) );
+          object_River.rotation.z = Math.PI;
+          object_River.position.z = -300;
+          object_River.position.y = 450;
+          scene.add(object_River);
+          
+          //Grass
+          var grass_End = new THREE.BoxGeometry(1050, 200, 5);
+          var object_grass_End = new THREE.Mesh( grass_End, new THREE.MeshPhongMaterial( { ambient: 0x006600, specular: 0x005900, shininess: 30, shading: THREE.SmoothShading, map: THREE.ImageUtils.loadTexture('textures/grass.jpg')  } ) );
+          
+          object_grass_End.rotation.z = Math.PI;
+          object_grass_End.position.z = -300;
+          object_grass_End.position.y = 850;
+          scene.add(object_grass_End);
 
-                object_Start.rotation.z = Math.PI;
-                object_Start.position.z = -300;
-                object_Start.position.y = -750;
-                scene.add(object_Start);
-                
-                
-                //Frogger
-                
-                var frogger = new THREE.BoxGeometry(50, 100, 50);
-                object_frogger = new THREE.Mesh( frogger, new THREE.MeshPhongMaterial( { ambient: 0xcc0000, color: 0xb20000, specular: 0x990000, shininess: 30, shading: THREE.SmoothShading } ) );
-                object_frogger.rotation.z = Math.PI;
-                object_frogger.position.z = -275;
-                object_frogger.position.y = -800;
-                object_frogger.bb = new BB();
-                
+          //SafeSpot
 
-                scene.add(object_frogger);
-                
-                //HELPER
-            
-                object_helper = new THREE.Mesh( frogger, new THREE.MeshPhongMaterial( { ambient: 0xcc0000, color: 0xb20000, specular: 0x990000,shininess: 30, shading: THREE.SmoothShading} ) );
-                object_helper.rotation.z = Math.PI;
-                object_helper.position.z = -300;
-                object_helper.position.y = 0;
-                
-                scene.add(object_helper);
-                
-                //Billboards
-                
-               var tree = new THREE.BoxGeometry(400, 400, 5);
-               var materialTree =new THREE.MeshPhongMaterial( { transparent: true, ambient: 0xFFFFFF, color: 0xFFFFFF, specular: 0xFFFFFF, shininess: 100, shading: THREE.SmoothShading, map: THREE.ImageUtils.loadTexture('textures/tree.png')} );
-               object_Tree1 = new THREE.Mesh( tree, materialTree);
-               
-               object_Tree1.position.z = -100;
-               object_Tree1.position.y = 150;
-               object_Tree1.position.x = 325;
-               object_Tree1.rotation.x = Math.PI/2;
-            
-               scene.add(object_Tree1);
-               
-               object_Tree2 = new THREE.Mesh( tree, materialTree);
-               
-               object_Tree2.position.z = -100;
-               object_Tree2.position.y = 150;
-               object_Tree2.position.x = -325;
-               object_Tree2.rotation.x = Math.PI/2;
-               
-               scene.add(object_Tree2);
+          var SafeSpot = new THREE.BoxGeometry(1050, 200, 5);
+          var object_safespot = new THREE.Mesh( SafeSpot, new THREE.MeshPhongMaterial( { ambient: 0x845321, specular: 0x73481d, shininess: 30, shading: THREE.SmoothShading, map: THREE.ImageUtils.loadTexture('textures/sidewalk.jpg')  } ) );
+          object_safespot.rotation.z = Math.PI;
+          object_safespot.position.z = -300;
+          object_safespot.position.y = 50;
+          scene.add(object_safespot);
+          
+          //Road
+          
+          var road = new THREE.BoxGeometry(1050, 600, 5);
+          var object_Road = new THREE.Mesh( road, new THREE.MeshPhongMaterial( { ambient: 0x666666, specular: 0x595959, shininess: 30, shading: THREE.SmoothShading, map: THREE.ImageUtils.loadTexture('textures/road.jpg') } ) );
+          object_Road.rotation.z = Math.PI;
+          object_Road.position.z = -300;
+          object_Road.position.y = -350;
+          scene.add(object_Road);
+          
+          //Start
+          
+          var start = new THREE.BoxGeometry(1050, 200, 5);
+          object_Start = new THREE.Mesh( start, new THREE.MeshPhongMaterial( { ambient: 0x006600, specular: 0x005900, shininess: 30, shading: THREE.SmoothShading, map: THREE.ImageUtils.loadTexture('textures/grass.jpg')  } ) );
 
-                
-                controls = new THREE.OrbitControls( cameraRotation );
-				controls.damping = 0.2;
-				controls.addEventListener( 'change', render );
-				
-                //LIGHTS---------------------------------------------------------------------------------------------------------------------------------
+          object_Start.rotation.z = Math.PI;
+          object_Start.position.z = -300;
+          object_Start.position.y = -750;
+          scene.add(object_Start);
+          
+          
+          //Frogger
+          
+          var frogger = new THREE.BoxGeometry(50, 100, 50);
+          object_frogger = new THREE.Mesh( frogger, new THREE.MeshPhongMaterial( { ambient: 0xcc0000, color: 0xb20000, specular: 0x990000, shininess: 30, shading: THREE.SmoothShading } ) );
+          object_frogger.rotation.z = Math.PI;
+          object_frogger.position.z = -275;
+          object_frogger.position.y = -800;
+          object_frogger.bb = new BB();
+          
 
+          scene.add(object_frogger);
+          
+          //HELPER
+      
+          object_helper = new THREE.Mesh( frogger, new THREE.MeshPhongMaterial( { ambient: 0xcc0000, color: 0xb20000, specular: 0x990000,shininess: 30, shading: THREE.SmoothShading} ) );
+          object_helper.rotation.z = Math.PI;
+          object_helper.position.z = -300;
+          object_helper.position.y = 0;
+          
+          scene.add(object_helper);
+          
+          //Billboards
+          
+          var tree = new THREE.BoxGeometry(400, 400, 5);
+          var materialTree =new THREE.MeshPhongMaterial( { transparent: true, ambient: 0xFFFFFF, color: 0xFFFFFF, specular: 0xFFFFFF, shininess: 100, shading: THREE.SmoothShading, map: THREE.ImageUtils.loadTexture('textures/tree.png')} );
+          object_Tree1 = new THREE.Mesh( tree, materialTree);
 
-                //AMBIENTE
-               
-                scene.add( new THREE.AmbientLight( 0x555555 ) );
-               
-                //DIRECIONAL/SUN
-                
-                var sun = new THREE.SphereGeometry( 100, 100, 100 );
-                directionalLight = new THREE.DirectionalLight(0xaaaaaa, 0.2);
-                //directionalLight.add(new THREE.Mesh( sun, new THREE.MeshBasicMaterial( { color: c1 } ) ) )
-                directionalLight.position.set(0,0, 10000000);
-                scene.add(directionalLight);
-               
-               
-               //POINTLIGHTS
-               
-               var intensity = 1.0;
-               var distance = 150;
-               var c1 = 0xffffff, c2 = 0x0040ff, c3 = 0x80ff80, c4 = 0xffaa00, c5 = 0x00ffaa, c6 = 0xff1100;
-               //var c1 = 0xffffff, c2 = 0xffffff, c3 = 0xffffff, c4 = 0xffffff, c5 = 0xffffff, c6 = 0xffffff;
-               var sphere = new THREE.SphereGeometry( 10, 10, 10 );
+          object_Tree1.position.z = -100;
+          object_Tree1.position.y = 150;
+          object_Tree1.position.x = 325;
+          object_Tree1.rotation.x = Math.PI/2;
+      
+          scene.add(object_Tree1);
+         
+          object_Tree2 = new THREE.Mesh( tree, materialTree);
+         
+          object_Tree2.position.z = -100;
+          object_Tree2.position.y = 150;
+          object_Tree2.position.x = -325;
+          object_Tree2.rotation.x = Math.PI/2;
+         
+          scene.add(object_Tree2);
 
-    
-    
-               light1 = new THREE.PointLight( c1, intensity, distance );
-               //light1.add( new THREE.Mesh( sphere, new THREE.MeshBasicMaterial( { color: c1 } ) ) );
-               light1.position.z = -200;
-               light1.position.y = 50;
-               light1.position.x = -400;
-               scene.add( light1 );
-               
-               light2 = new THREE.PointLight( c1, intensity, distance );
-               //light1.add( new THREE.Mesh( sphere, new THREE.MeshBasicMaterial( { color: c1 } ) ) );
-               light2.position.z = -200;
-               light2.position.y = 50;
-               light2.position.x = 400;
-               scene.add( light2 );
-               
-               
-               light3 = new THREE.PointLight( c1, intensity, distance );
-               //light1.add( new THREE.Mesh( sphere, new THREE.MeshBasicMaterial( { color: c1 } ) ) );
-               light3.position.z = -200;
-               light3.position.y = -750;
-               light3.position.x = 400;
-               scene.add( light3 );
-               
-               light4 = new THREE.PointLight( c1, intensity, distance );
-               //light1.add( new THREE.Mesh( sphere, new THREE.MeshBasicMaterial( { color: c1 } ) ) );
-               light4.position.z = -200;
-               light4.position.y = -750;
-               light4.position.x = -400;
-               scene.add( light4 );
-               
-               light5 = new THREE.PointLight( c1, intensity, distance );
-               //light1.add( new THREE.Mesh( sphere, new THREE.MeshBasicMaterial( { color: c1 } ) ) );
-               light5.position.z = -200;
-               light5.position.y = 850;
-               light5.position.x = 400;
-               scene.add( light5 );
-               
-               
-               light6 = new THREE.PointLight( c1, intensity, distance );
-               //light1.add( new THREE.Mesh( sphere, new THREE.MeshBasicMaterial( { color: c1 } ) ) );
-               light6.position.z = -200;
-               light6.position.y = 850;
-               light6.position.x = -400;
-               scene.add( light6 );
-               
-               //SOTLIGHT
-               
-               spotLight = new THREE.SpotLight( 0xdddddd );
-               
-               spotLight.intensity = 1;
-               spotLight.distance = 2000;
-               spotLight.angle = Math.PI/20;
-               spotLight.exponent = 0;
-               
-               scene.add(spotLight);
-			   
-			   //LENS FLARE
-			   
-			   
-				var textureFlare0 = THREE.ImageUtils.loadTexture( "textures/lensflare0.png" );
-				var textureFlare2 = THREE.ImageUtils.loadTexture( "textures/lensflare2.png" );
-				var textureFlare3 = THREE.ImageUtils.loadTexture( "textures/lensflare3.png" );
-				
-				addLight( 0.55, 0.9, 0.5, 0, 500, -100 );
-				
-				function addLight( h, s, l, x, y, z ) {
-					var light = new THREE.PointLight( 0xffffff, 1.5, 4500 );
-					light.color.setHSL( h, s, l );
-					light.position.set( x, y, z );
-					scene.add( light );
-					var flareColor = new THREE.Color( 0xffffff );
-					flareColor.setHSL( h, s, l + 0.5 );
-					var lensFlare = new THREE.LensFlare( textureFlare0, 700, 0.0, THREE.AdditiveBlending, flareColor );
-					lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
-					lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
-					lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
-					lensFlare.add( textureFlare3, 60, 0.6, THREE.AdditiveBlending );
-					lensFlare.add( textureFlare3, 70, 0.7, THREE.AdditiveBlending );
-					lensFlare.add( textureFlare3, 120, 0.9, THREE.AdditiveBlending );
-					lensFlare.add( textureFlare3, 70, 1.0, THREE.AdditiveBlending );
-					lensFlare.customUpdateCallback = lensFlareUpdateCallback;
-					lensFlare.position.copy( light.position );
-					scene.add( lensFlare );
-				}
-               
-               initCars();
-               
-            
-                window.addEventListener( 'resize', onWindowResize, false);
-                window.addEventListener('keydown', checkKeyPressed, false);
-                
-            }    ///TERMINA INIT
+          
+          controls = new THREE.OrbitControls( cameraRotation );
+	        controls.damping = 0.2;
+          controls.addEventListener( 'change', render );
+	
+          // INIT LIGHTS ///////////////////////////////////////////////////////
+          // AMBIENT LIGHT
+          scene.add( new THREE.AmbientLight( 0x555555 ) );
+         
+          // DIRECIONAL LIGHT
+          var sun = new THREE.SphereGeometry( 100, 100, 100 );
+          directionalLight = new THREE.DirectionalLight(0xaaaaaa, 0.2);
+          directionalLight.position.set(0,0, 10000000);
+          scene.add(directionalLight);
+          
+          // POINT LIGHTS
+          var intensity = 1.0;
+          var distance = 150;
+          var c1 = 0xffffff, c2 = 0x0040ff, c3 = 0x80ff80, c4 = 0xffaa00, c5 = 0x00ffaa, c6 = 0xff1100;
+          var sphere = new THREE.SphereGeometry( 10, 10, 10 );
+
+          light1 = new THREE.PointLight( c1, intensity, distance );
+          light1.position.z = -200;
+          light1.position.y = 50;
+          light1.position.x = -400;
+          scene.add( light1 );
+         
+          light2 = new THREE.PointLight( c1, intensity, distance );
+          light2.position.z = -200;
+          light2.position.y = 50;
+          light2.position.x = 400;
+          scene.add( light2 );
+         
+          light3 = new THREE.PointLight( c1, intensity, distance );
+          light3.position.z = -200;
+          light3.position.y = -750;
+          light3.position.x = 400;
+          scene.add( light3 );
+         
+          light4 = new THREE.PointLight( c1, intensity, distance );
+          light4.position.z = -200;
+          light4.position.y = -750;
+          light4.position.x = -400;
+          scene.add( light4 );
+         
+          light5 = new THREE.PointLight( c1, intensity, distance );
+          light5.position.z = -200;
+          light5.position.y = 850;
+          light5.position.x = 400;
+          scene.add( light5 );
+         
+          light6 = new THREE.PointLight( c1, intensity, distance );
+          light6.position.z = -200;
+          light6.position.y = 850;
+          light6.position.x = -400;
+          scene.add( light6 );
+         
+          //SPOT LIGHT
+          spotLight = new THREE.SpotLight( 0xdddddd );
+          spotLight.intensity = 1;
+          spotLight.distance = 2000;
+          spotLight.angle = Math.PI/20;
+          spotLight.exponent = 0;
+          scene.add(spotLight);
+   
+          //LENS FLARE
+	        var textureFlare0 = THREE.ImageUtils.loadTexture( "textures/lensflare0.png" );
+    			var textureFlare2 = THREE.ImageUtils.loadTexture( "textures/lensflare2.png" );
+    			var textureFlare3 = THREE.ImageUtils.loadTexture( "textures/lensflare3.png" );
+    			
+    			addLight( 0.55, 0.9, 0.5, 0, 500, -100 );
+	
+    			function addLight( h, s, l, x, y, z ) {
+    				var light = new THREE.PointLight( 0xffffff, 1.5, 4500 );
+    				light.color.setHSL( h, s, l );
+    				light.position.set( x, y, z );
+    				scene.add( light );
+    				var flareColor = new THREE.Color( 0xffffff );
+    				flareColor.setHSL( h, s, l + 0.5 );
+    				var lensFlare = new THREE.LensFlare( textureFlare0, 700, 0.0, THREE.AdditiveBlending, flareColor );
+    				lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+    				lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+    				lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+    				lensFlare.add( textureFlare3, 60, 0.6, THREE.AdditiveBlending );
+    				lensFlare.add( textureFlare3, 70, 0.7, THREE.AdditiveBlending );
+    				lensFlare.add( textureFlare3, 120, 0.9, THREE.AdditiveBlending );
+    				lensFlare.add( textureFlare3, 70, 1.0, THREE.AdditiveBlending );
+    				lensFlare.customUpdateCallback = lensFlareUpdateCallback;
+    				lensFlare.position.copy( light.position );
+    				scene.add( lensFlare );
+    			}
+         
+          initCars();
+         
+      
+          window.addEventListener( 'resize', onWindowResize, false);
+          window.addEventListener('keydown', checkKeyPressed, false);
+          
+      }
+      // END OF INIT() --------------------------------------------------------------------------------
 
 
-         function checkCollisions(){
-            for (var i=0; i < numCars; i++) {
-                    if(frog.bb.collide(cars1[i].bb)){takeLifes()}
-              if(frog.bb.collide(cars2[i].bb)){takeLifes()}
-                }
-            for (var i=0; i < numBuses; i++) {
-                    if(frog.bb.collide(buses[i].bb)){takeLifes()}
-                }
+      function checkCollisions(){
+        for (var i=0; i < numCars; i++) {
+          if(frog.bb.collide(cars1[i].bb)){takeLifes()}
+          if(frog.bb.collide(cars2[i].bb)){takeLifes()}
+        }
+        for (var i=0; i < numBuses; i++) {
+          if(frog.bb.collide(buses[i].bb)){takeLifes()}
+        }
         
        /* //if on the river
         var col = true;
@@ -377,282 +342,287 @@
           }*/
       }       
         
-		 function lensFlareUpdateCallback( object ) {
-				var f, fl = object.lensFlares.length;
+		  function lensFlareUpdateCallback( object ) {
+        var f, fl = object.lensFlares.length;
 				var flare;
 				var vecX = -object.positionScreen.x * 2;
 				var vecY = -object.positionScreen.y * 2;
+
 				for( f = 0; f < fl; f++ ) {
-					   flare = object.lensFlares[ f ];
-					   flare.x = object.positionScreen.x + vecX * flare.distance;
-					   flare.y = object.positionScreen.y + vecY * flare.distance;
-					   flare.rotation = 0;
+				  flare = object.lensFlares[ f ];
+			    flare.x = object.positionScreen.x + vecX * flare.distance;
+          flare.y = object.positionScreen.y + vecY * flare.distance;
+					flare.rotation = 0;
 				}
+
 				object.lensFlares[ 2 ].y += 0.025;
 				object.lensFlares[ 3 ].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad( 45 );
 			}
 			
-        function checkKeyPressed(e) {
-            switch(e.keyCode){
-                case 81:
-                //Q
-                if(object_frogger.position.y < mapLimit -100){
-                    object_frogger.position.y += 100;
-                    object_helper.position.y += 100;
-                }
-                break;
-                case 79:
-                //O
-                if(object_frogger.position.x  > -mapLimit/2){
-                    object_frogger.position.x -= 50;
-                    object_helper.position.x -= 50;
-                }
-                break;
-                case 65:
-                //A
-                if(object_frogger.position.y  > - mapLimit  + 200){
-                    object_frogger.position.y -= 100;
-                    object_helper.position.y -= 100;
-                }
-                break;
-                case 80:
-                //P
-                if(object_frogger.position.x  < mapLimit/2){
-                    object_frogger.position.x += 50;
-                    object_helper.position.x += 50;
-                }
-                break;
-                case 49:
-                //1
-                activeCamera = cameraOrtho;
-                break;
-                case 50:
-                //2
-                activeCamera = cameraPerspective;
-                break;
-                case 51:
-                //3
-                activeCamera = cameraFrogg;
-				break;
-				//4
-				case 52:
-				activeCamera = cameraRotation;
-                case 67:
-				//C
-                if(pointLightOn == true){
-                    pointLightOn = false;
-                    scene.remove(light1);
-                    scene.remove(light2);
-                    scene.remove(light3);
-                    scene.remove(light4);
-                    scene.remove(light5);
-                    scene.remove(light6);
-                }else{
-                    pointLightOn = true;
-                    scene.add(light1);
-                    scene.add(light2);
-                    scene.add(light3);
-                    scene.add(light4);
-                    scene.add(light5);
-                    scene.add(light6);
-                }
-                break;
-                case 78:
-				//N
-                if(directionalOn == true){
-                    directionalOn = false;
-                    scene.remove(directionalLight);
-                }else{
-                    directionalOn = true;
-                    scene.add(directionalLight);
-                }
-                break;
-                case 83:
-				//S
-                if(spotLightOn == true){
-                    spotLightOn = false;
-                    scene.remove(spotLight);
-                }else{
-                    spotLightOn = true;
-                    scene.add(spotLight);
-                }
-                break;
-				case 70:
-				if(fogOn){
-				scene.fog = new THREE.FogExp2( 0xa5a5a5, 0.0025 );
-				fogOn = false;
-				}
-				else{fogOn = true;
-				scene.fog = new THREE.FogExp2( 0xa5a5a5, 0.0 );}
-            }
+      function checkKeyPressed(e) {
+        switch(e.keyCode){
+          // FROG MOVEMENT
+          case 81: //Q
+          if(object_frogger.position.y < mapLimit -100){
+              object_frogger.position.y += 100;
+              object_helper.position.y += 100;
+          }
+          break;
 
-            object_frogger.bb.vecMin = [object_frogger.position.x-150, object_frogger.position.y-300, object_frogger.position.z-1];
-            object_frogger.bb.vecMax = [object_frogger.position.x+150, object_frogger.position.y+300, object_frogger.position.z+1];
-        }
-        
-        function onWindowResize() {
-            
-            activeCamera.aspect = window.innerWidth / window.innerHeight;
-            activeCamera.updateProjectionMatrix();
-            
-            renderer.setSize( window.innerWidth, window.innerHeight );
-			
-			render();
-            
-        }
-        
-        function ExplodeAnimation(x,y)
-        {
-            var geometry = new THREE.Geometry();
-            
-            for (i = 0; i < totalObjects; i ++)
-            {
-                var vertex = new THREE.Vector3();
-                vertex.x = x;
-                vertex.y = y;
-                vertex.z = -280;
-                
-                geometry.vertices.push( vertex );
-                dirs.push({x:(Math.random() * movementSpeed)-(movementSpeed/2),y:(Math.random() * movementSpeed)-(movementSpeed/2),z:(Math.random() * movementSpeed)-(movementSpeed/2)});
-            }
-            var material = new THREE.PointCloudMaterial( { size: objectSize,  color: colors[Math.round(Math.random() * colors.length)] ,map: THREE.ImageUtils.loadTexture("textures/particle.png"),blending: THREE.AdditiveBlending,transparent: true });
-            var particles = new THREE.PointCloud( geometry, material );
-            
-            this.object = particles;
-            this.status = true;
-            
-            this.xDir = (Math.random() * movementSpeed)-(movementSpeed/2);
-            this.yDir = (Math.random() * movementSpeed)-(movementSpeed/2);
-            this.zDir = (Math.random() * movementSpeed)-(movementSpeed/2);
-            
-            scene.add(this.object);
-            
-            this.update = function(){
-                if (this.status == true){
-                    var pCount = totalObjects;
-                    while(pCount--) {
-                        var particle =  this.object.geometry.vertices[pCount]
-                        particle.y += dirs[pCount].y;
-                        particle.x += dirs[pCount].x;
-                        particle.z += dirs[pCount].z;
-                    }
-                    this.object.geometry.verticesNeedUpdate = true;
-                }
-            }
-            
-        }
-        
-        //quando chegar ao fim do Jogo
-        function onclick(){
-            event.preventDefault();
-            parts.push(new ExplodeAnimation((Math.random() * sizeRandomness)-(sizeRandomness/2), (Math.random() * sizeRandomness)-(sizeRandomness/2)));
-        }
-        
-        function animate() {
-            
-            requestAnimationFrame( animate );
-			
-	
-			
-            cameraFrogg.position.z = -250;
-            cameraFrogg.position.y = object_frogger.position.y;
-            cameraFrogg.position.x = object_frogger.position.x;
-            cameraFrogg.up = new THREE.Vector3(0,1,0);
-            cameraFrogg.lookAt(new THREE.Vector3(object_frogger.position.x,object_frogger.position.y+800,object_frogger.position.z-100));
-			
-			cameraRotation.position.z = -250;
-            cameraRotation.position.y = object_frogger.position.y;
-            cameraRotation.position.x = object_frogger.position.x;
-            cameraRotation.up = new THREE.Vector3(0,0,1);
-            cameraRotation.lookAt(new THREE.Vector3(object_frogger.position.x,object_frogger.position.y+800,object_frogger.position.z-100));
-        	controls.update();
-			
-            spotLight.position.set( object_frogger.position.x, object_frogger.position.y, -285 );
-            
-            spotLight.target = object_helper;
-            
-			//billboarding
+          case 79: //O
+          if(object_frogger.position.x  > -mapLimit/2){
+              object_frogger.position.x -= 50;
+              object_helper.position.x -= 50;
+          }
+          break;
 
-            object_Tree1.rotation.setFromRotationMatrix( activeCamera.matrix );
-            object_Tree2.rotation.setFromRotationMatrix( activeCamera.matrix );
-           
-            
-            updateCars();
-			
-            var pCount = parts.length;
+          case 65: //A
+          if(object_frogger.position.y  > - mapLimit  + 200){
+              object_frogger.position.y -= 100;
+              object_helper.position.y -= 100;
+          }
+          break;
+
+          case 80: //P
+          if(object_frogger.position.x  < mapLimit/2){
+              object_frogger.position.x += 50;
+              object_helper.position.x += 50;
+          }
+          break;
+
+          // CAMERAS
+          case 49: //1
+          activeCamera = cameraOrtho;
+          break;
+
+          case 50: //2
+          activeCamera = cameraPerspective;
+          break;
+
+          case 51: //3
+          activeCamera = cameraFrogg;
+			    break;
+
+  				case 52: //4
+  				activeCamera = cameraRotation;
+          break;
+
+          // LIGHTS
+          case 67: //C
+          if(pointLightOn == true){
+            pointLightOn = false;
+            scene.remove(light1);
+            scene.remove(light2);
+            scene.remove(light3);
+            scene.remove(light4);
+            scene.remove(light5);
+            scene.remove(light6);
+          } else {
+            pointLightOn = true;
+            scene.add(light1);
+            scene.add(light2);
+            scene.add(light3);
+            scene.add(light4);
+            scene.add(light5);
+            scene.add(light6);
+          }
+          break;
+
+          case 78: //N
+          if(directionalOn == true) {
+            directionalOn = false;
+            scene.remove(directionalLight);
+          } else {
+            directionalOn = true;
+            scene.add(directionalLight);
+          }
+          break;
+
+          case 83: //S
+          if(spotLightOn == true) {
+            spotLightOn = false;
+            scene.remove(spotLight);
+          } else {
+            spotLightOn = true;
+            scene.add(spotLight);
+          }
+          break;
+
+			    case 70:
+			    if(fogOn){
+    				scene.fog = new THREE.FogExp2( 0xa5a5a5, 0.0025 );
+    				fogOn = false;
+	        } else {
+            fogOn = true;
+			      scene.fog = new THREE.FogExp2( 0xa5a5a5, 0.0 );
+          }
+          break;
+        }
+
+        object_frogger.bb.vecMin = [object_frogger.position.x-150, object_frogger.position.y-300, object_frogger.position.z-1];
+        object_frogger.bb.vecMax = [object_frogger.position.x+150, object_frogger.position.y+300, object_frogger.position.z+1];
+      }
+        
+      function onWindowResize() {
+        activeCamera.aspect = window.innerWidth / window.innerHeight;
+        activeCamera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight );
+		    render();
+      }
+        
+      function ExplodeAnimation(x,y) {
+        var geometry = new THREE.Geometry();
+          
+        for (i = 0; i < totalObjects; i ++) {
+          var vertex = new THREE.Vector3();
+          vertex.x = x;
+          vertex.y = y;
+          vertex.z = -280;
+          
+          geometry.vertices.push( vertex );
+          dirs.push({x:(Math.random() * movementSpeed)-(movementSpeed/2),y:(Math.random() * movementSpeed)-(movementSpeed/2),z:(Math.random() * movementSpeed)-(movementSpeed/2)});
+        }
+        var material = new THREE.PointCloudMaterial( { size: objectSize,  color: particlesColors[Math.round(Math.random() * particlesColors.length)] ,map: THREE.ImageUtils.loadTexture("textures/particle.png"),blending: THREE.AdditiveBlending,transparent: true });
+        var particles = new THREE.PointCloud( geometry, material );
+          
+        this.object = particles;
+        this.status = true;
+        
+        this.xDir = (Math.random() * movementSpeed)-(movementSpeed/2);
+        this.yDir = (Math.random() * movementSpeed)-(movementSpeed/2);
+        this.zDir = (Math.random() * movementSpeed)-(movementSpeed/2);
+        
+        scene.add(this.object);
+        
+        this.update = function() {
+          if (this.status == true) {
+            var pCount = totalObjects;
             while(pCount--) {
-                parts[pCount].update();
+              var particle =  this.object.geometry.vertices[pCount]
+              particle.y += dirs[pCount].y;
+              particle.x += dirs[pCount].x;
+              particle.z += dirs[pCount].z;
             }
-            
-            object_box.rotation.y += 0.005;
-            object_box.position.z += 0.005;
-            
-            
-            render();
 
-            checkCollisions();
+            this.object.geometry.verticesNeedUpdate = true;
+          }
+        }          
+      }
+        
+      //quando chegar ao fim do Jogo
+      function onclick() {
+          event.preventDefault();
+          parts.push(new ExplodeAnimation((Math.random() * sizeRandomness)-(sizeRandomness/2), (Math.random() * sizeRandomness)-(sizeRandomness/2)));
+      }
+        
+      function animate() {
+        requestAnimationFrame(animate);
+
+        cameraFrogg.position.z = -250;
+        cameraFrogg.position.y = object_frogger.position.y;
+        cameraFrogg.position.x = object_frogger.position.x;
+        cameraFrogg.up = new THREE.Vector3(0,1,0);
+        cameraFrogg.lookAt(new THREE.Vector3(object_frogger.position.x,object_frogger.position.y+800,object_frogger.position.z-100));
+			
+        cameraRotation.position.z = -250;
+        cameraRotation.position.y = object_frogger.position.y;
+        cameraRotation.position.x = object_frogger.position.x;
+        cameraRotation.up = new THREE.Vector3(0,0,1);
+        cameraRotation.lookAt(new THREE.Vector3(object_frogger.position.x,object_frogger.position.y+800,object_frogger.position.z-100));
+
+        controls.update();
+			
+        spotLight.position.set( object_frogger.position.x, object_frogger.position.y, -285 );
+        spotLight.target = object_helper;
+            
+        //billboarding
+        object_Tree1.rotation.setFromRotationMatrix( activeCamera.matrix );
+        object_Tree2.rotation.setFromRotationMatrix( activeCamera.matrix );
+
+        //dynamic objects update
+        updateCars();
+			
+        var pCount = parts.length;
+        while(pCount--) {
+          parts[pCount].update();
         }
+            
+        object_box.rotation.y += 0.005;
+        object_box.position.z += 0.005;
+
+        render();
+        checkCollisions();
+      }
         
         
-        function initCars(){
+      function initCars() {
             
-            var car = new THREE.BoxGeometry(50, 100, 50);
-            
-            
-            for (i = 0; i < 15; i++) {
-                object_car = new THREE.Mesh( car, new THREE.MeshPhongMaterial( { ambient: 0x0DDDDD, color: 0xdddddd, specular: 0x009900, shininess: 30, shading: THREE.SmoothShading } ) );
-                object_car.rotation.z = Math.PI;
-                object_car.position.z = -275;
-                object_car.moving = 0;
-                 //Lane1
-                 if(i <= 2){
-                     object_car.position.y = -575;
-                     object_car.position.x = -510;
-                 }
-                 //Lane2
-                 else if(i >= 3 && i <= 5){
-                     object_car.position.y = -425;
-                     object_car.position.x = 510;
-                 }
-                 //Lane3
-                 else if(i >= 9 && i <= 11){
-                     object_car.position.y = -275;
-                     object_car.position.x = 510;
-                 }
-                 //Lane4
-                 else{
-                     object_car.position.y = -125;
-                     object_car.position.x = -510;
-                 }
-                 
-                cars.push(object_car);
-                scene.add(object_car);
-            }
+        var car = new THREE.BoxGeometry(50, 100, 50);
+  
+        for (i = 0; i < 15; i++) {
+          object_car = new THREE.Mesh(car, new THREE.MeshPhongMaterial({
+            ambient: 0x0DDDDD, 
+            color: 0xdddddd, 
+            specular: 0x009900, 
+            shininess: 30, 
+            shading: THREE.SmoothShading
+          }));
+          object_car.rotation.z = Math.PI;
+          object_car.position.z = -275;
+          object_car.moving = 0;
+          //Lane1
+          if(i <= 2){
+            object_car.position.y = -575;
+            object_car.position.x = -510;
+          }
+          //Lane2
+          else if(i >= 3 && i <= 5){
+            object_car.position.y = -425;
+            object_car.position.x = 510;
+          }
+          //Lane3
+          else if(i >= 9 && i <= 11){
+            object_car.position.y = -275;
+            object_car.position.x = 510;
+          }
+          //Lane4
+          else {
+            object_car.position.y = -125;
+            object_car.position.x = -510;
+          }
+           
+          cars.push(object_car);
+          scene.add(object_car);
         }
+      }
 
 
-        function updateCars(){
-            for(i = 0; i < cars.length; i++){
-                var car = cars[i];
-                var lane = car.position.y.toString()[1];
-                if(lane % 2 == 0){
-                    car.position.x -= 5;
-                    if(car.position.x < -515){
-                        scene.remove(car);
-                        car.position.x = 510;
-                        scene.add(car);
-                    }
-                }
-                else{
-                    car.position.x += 5;
-                    if(car.position.x > 515){
-                        scene.remove(car);
-                        car.position.x = -510;
-                        scene.add(car);
-                    }
-                }
+      function updateCars(){
+        for(i = 0; i < cars.length; i++){
+          var car = cars[i];
+          var lane = car.position.y.toString()[1];
+
+          if(lane % 2 == 0) {
+            car.position.x -= 5;
+
+            if(car.position.x < -515) {
+              scene.remove(car);
+              car.position.x = 510;
+              scene.add(car);
             }
+          }
+          else {
+            car.position.x += 5;
+
+            if(car.position.x > 515) {
+              scene.remove(car);
+              car.position.x = -510;
+              scene.add(car);
+            }
+          }
         }
+      }
         
         
     </script>
