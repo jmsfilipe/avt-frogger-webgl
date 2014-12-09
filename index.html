@@ -36,8 +36,7 @@
       var numCars = 4;
 
       var numLogs = 2;
-
-      var numTurtles = 4;
+      var numTurtles = 2;
 
 
       var turtles = [];
@@ -330,11 +329,12 @@
        
         initCars();
         initTurtles();
+        initLogs();
        
     
         window.addEventListener( 'resize', onWindowResize, false);
         window.addEventListener('keydown', checkKeyPressed, false);
-		  window.addEventListener( 'mousedown', onclick, false );
+		    window.addEventListener( 'mousedown', onclick, false );
           
       }
       // END OF INIT() --------------------------------------------------------------------------------
@@ -417,33 +417,33 @@
           // FROG MOVEMENT
           case 81: //Q
           if(object_frogger.position.y < mapLimit -100){
-              object_frogger.position.y += 100;
-              object_helper.position.y += 100;
-			  updateFrog();
+            object_frogger.position.y += 100;
+            object_helper.position.y += 100;
+			      updateFrog();
           }
           break;
 
           case 79: //O
           if(object_frogger.position.x  > -mapLimit/2){
-              object_frogger.position.x -= 50;
-              object_helper.position.x -= 50;
-			  updateFrog();
+            object_frogger.position.x -= 50;
+            object_helper.position.x -= 50;
+			      updateFrog();
           }
           break;
 
           case 65: //A
           if(object_frogger.position.y  > - mapLimit  + 200){
-              object_frogger.position.y -= 100;
-              object_helper.position.y -= 100;
-			  updateFrog();
+            object_frogger.position.y -= 100;
+            object_helper.position.y -= 100;
+			      updateFrog();
           }
           break;
 
           case 80: //P
           if(object_frogger.position.x  < mapLimit/2){
-              object_frogger.position.x += 50;
-              object_helper.position.x += 50;
-			  updateFrog();
+            object_frogger.position.x += 50;
+            object_helper.position.x += 50;
+			      updateFrog();
           }
           break;
 
@@ -568,8 +568,8 @@
         
       //quando chegar ao fim do Jogo
       function onclick() {
-          event.preventDefault();
-          parts.push(new ExplodeAnimation((Math.random() * sizeRandomness)-(sizeRandomness/2), (Math.random() * sizeRandomness)-(sizeRandomness/2)));
+        event.preventDefault();
+        parts.push(new ExplodeAnimation((Math.random() * sizeRandomness)-(sizeRandomness/2), (Math.random() * sizeRandomness)-(sizeRandomness/2)));
       }
         
       function animate() {
@@ -599,6 +599,7 @@
         //dynamic objects update
         updateCars();
         updateTurtles();
+        updateLogs();
 			
         var pCount = parts.length;
         while(pCount--) {
@@ -684,13 +685,12 @@
       
       function initTurtles() {
         var turtle = new THREE.BoxGeometry(50, 100, 50);
-        var log = new THREE.BoxGeometry(160, 100, 50);
 
-        for(i = 0; i < 4; i++) {
-          var object_turtle = new THREE.Mesh((i % 2 == 0? turtle : log), new THREE.MeshPhongMaterial({
-            ambient: (i % 2 == 0? 0x004411 : 0x5E2605),
-            color: (i % 2 == 0? 0x00DD22 : 0x5E2605),
-            specular: (i % 2 == 0? 0x00FFAA : 0x5E2605),
+        for(i = 0; i < numTurtles; i++) {
+          var object_turtle = new THREE.Mesh(turtle, new THREE.MeshPhongMaterial({
+            ambient: 0x004411,
+            color: 0x00DD22,
+            specular: 0x00FFAA,
             shininess: 20,
             shading: THREE.SmoothShading
           }));
@@ -701,24 +701,14 @@
 
 
           //Lane1
-          if(i == 0){
+          if(i % 2 == 0) {
             object_turtle.position.y = 225; //150 + 150/2.0
             object_turtle.position.x = -510;
           }
           //Lane2
-          else if(i == 1){
-            object_turtle.position.y = 375; //previous + 150
+          else if(i % 2 == 1) {
+            object_turtle.position.y = 525; //previous + (150 * 2)
             object_turtle.position.x = 510;
-          }
-          //Lane3
-          else if(i == 2){
-            object_turtle.position.y = 525; //idem
-            object_turtle.position.x = 510;
-          }
-          //Lane4
-          else {
-            object_turtle.position.y = 675; //idem
-            object_turtle.position.x = -510;
           }
            
           turtles.push(object_turtle);
@@ -732,7 +722,6 @@
           var row = turtle.position.y.toString()[1];
 
           if(row % 2 == 0) {
-
             turtle.position.x -= 3;
 
             if(turtle.position.x < -515) {
@@ -744,7 +733,6 @@
           else {
             turtle.position.x += 3;
 
-
             if(turtle.position.x > 515) {
               scene.remove(turtle);
               turtle.position.x = -510;
@@ -754,6 +742,69 @@
 
           turtle.bb.vecMin = [turtle.position.x-30, turtle.position.y-30, turtle.position.z-30];
           turtle.bb.vecMax = [turtle.position.x+30, turtle.position.y+30, turtle.position.z+30];
+
+        }
+      }
+
+      function initLogs() {
+        var log = new THREE.BoxGeometry(160, 100, 50);
+
+        for(i = 0; i < numLogs; i++) {
+          var object_log = new THREE.Mesh(log, new THREE.MeshPhongMaterial({
+            ambient: 0x5E2605,
+            color: 0x5E2605,
+            specular: 0x5E2605,
+            shininess: 20,
+            shading: THREE.SmoothShading
+          }));
+          object_log.rotation.z = Math.PI;
+          object_log.position.z = -318;
+          object_log.moving = 0;
+          object_log.bb = new BB();
+
+
+          //Lane1
+          if(i % 2 == 0) {
+            object_log.position.y = 375; //150 + 150/2.0
+            object_log.position.x = -510;
+          }
+          //Lane2
+          else if(i % 2 == 1) {
+            object_log.position.y = 675; //previous + (150 * 2)
+            object_log.position.x = 510;
+          }
+           
+          timberLogs.push(object_log);
+          scene.add(object_log);
+        }
+      }
+
+      function updateLogs() {
+        for(i = 0; i < timberLogs.length; i++){
+          var log = timberLogs[i];
+          var row = log.position.y.toString()[1];
+
+          if(row % 2 == 0) {
+            log.position.x -= 3;
+
+            if(log.position.x < -515) {
+              scene.remove(log);
+              log.position.x = 510;
+              scene.add(log);
+            }
+          }
+          else {
+            log.position.x += 3;
+
+            if(log.position.x > 515) {
+              scene.remove(log);
+              log.position.x = -510;
+              scene.add(log);
+            }
+          }
+
+          log.bb.vecMin = [log.position.x-30, log.position.y-30, log.position.z-30];
+          log.bb.vecMax = [log.position.x+30, log.position.y+30, log.position.z+30];
 
         }
       }
