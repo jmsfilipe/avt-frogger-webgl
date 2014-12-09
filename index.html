@@ -342,12 +342,12 @@
                     if(frog.bb.collide(buses[i].bb)){takeLifes()}
                 } */
         
-       /* //if on the river
+       /*//if on the river
         var col = true;
-        if(frog.y > 0 && frog.y < 25){
+        if(object_frogger.position.y > 450 && object_frogger.position.y < 50){
           
           for (var i=0; i < numTurtles; i++) {
-            if(frog.bb.collide(turtles1[i].bb)){col = true; break;} else {col = false;}
+            if(object_frogger.bb.collide(turtles1[i].bb)){col = true; break;} else {col = false;}
           }
           if(!col) takeLifes();
           
@@ -367,7 +367,7 @@
           if(!col) takeLifes();
         }
         
-        if(frog.y >= 25){
+        if(frog.y >= 50){
           frog.reset();
           addPoints();
           }*/
@@ -675,6 +675,8 @@
           object_turtle.rotation.z = Math.PI;
           object_turtle.position.z = -318;
           object_turtle.moving = 0;
+          object_turtle.bb = new BB();
+
 
           //Lane1
           if(i == 0){
@@ -710,21 +712,25 @@
           if(row % 2 == 0) {
             turtle.position.x -= 5;
 
-            if(turtle.position.x < -560) {
+            if(turtle.position.x < -515) {
               scene.remove(turtle);
-              turtle.position.x = 560;
+              turtle.position.x = 510;
               scene.add(turtle);
             }
           }
           else {
             turtle.position.x += 5;
 
-            if(turtle.position.x > 560) {
+            if(turtle.position.x > 515) {
               scene.remove(turtle);
-              turtle.position.x = -560;
+              turtle.position.x = -510;
               scene.add(turtle);
             }
           }
+
+          turtle.bb.vecMin = [turtle.position.x-30, turtle.position.y-30, turtle.position.z-30];
+          turtle.bb.vecMax = [turtle.position.x+30, turtle.position.y+30, turtle.position.z+30];
+
         }
       }
 
