@@ -34,6 +34,12 @@
       var mesh;
       var cars = [];
       var numCars = 4;
+
+      var numLogs = 2;
+
+      var numTurtles = 4;
+
+
       var turtles = [];
       var timberLogs = [];
 
@@ -338,37 +344,53 @@
         for (var i=0; i < numCars; i++) {
           if(object_frogger.bb.collide(cars[i].bb)){takeLifes()}
         }
-           /* for (var i=0; i < numBuses; i++) {
-                    if(frog.bb.collide(buses[i].bb)){takeLifes()}
-                } */
         
-       /*//if on the river
+
+       //if on the river
         var col = true;
-        if(object_frogger.position.y > 450 && object_frogger.position.y < 50){
+        if(object_frogger.position.y > 150 && object_frogger.position.y < 800){
           
           for (var i=0; i < numTurtles; i++) {
-            if(object_frogger.bb.collide(turtles1[i].bb)){col = true; break;} else {col = false;}
+            if(object_frogger.bb.collide(turtles[i].bb)){col = true; break;} else {col = false;}
           }
           if(!col) takeLifes();
-          
-          for (var i=0; i < numTurtles; i++) {
+
+
+          }
+          /*for (var i=0; i < numTurtles; i++) {
             if(!frog.bb.collide(turtles2[i].bb)){col = true; break;} else {col = false;}
           }
-          if(!col) takeLifes();
+          if(!col) takeLifes();*/
           
           for (var i=0; i < numLogs; i++) {
-            if(!frog.bb.collide(logs1[i].bb)){col = true; break;} else {col = false;}
+            if(!object_frogger.bb.collide(turtles[i].bb)){col = true; break;} else {col = false;}
           }
           if(!col) takeLifes();
           
-          for (var i=0; i < numLogs; i++) {
+         /* for (var i=0; i < numLogs; i++) {
             if(!frog.bb.collide(logs2[i].bb)){col = true; break;} else {col = false;}
           }
           if(!col) takeLifes();
         }
         
-        if(frog.y >= 50){
+        if(frog.y >= 350){
           frog.reset();
+          if(col){
+            object_frogger.position.x -= 1;
+          }
+        }
+        
+        if(object_frogger.position.y >= 800){
+          resetFrog();
+
+
+          if(col){
+            object_frogger.position.x -= 1;
+          }
+        }
+        
+        if(object_frogger.position.y >= 800){
+          resetFrog();
           addPoints();
           }*/
       }       
@@ -710,7 +732,8 @@
           var row = turtle.position.y.toString()[1];
 
           if(row % 2 == 0) {
-            turtle.position.x -= 5;
+
+            turtle.position.x -= 3;
 
             if(turtle.position.x < -515) {
               scene.remove(turtle);
@@ -719,7 +742,8 @@
             }
           }
           else {
-            turtle.position.x += 5;
+            turtle.position.x += 3;
+
 
             if(turtle.position.x > 515) {
               scene.remove(turtle);
