@@ -95,7 +95,6 @@
 
       /////////////////////////////////
 
-
 			
 	    function render() {
 				renderer.render( scene, activeCamera );
@@ -299,6 +298,11 @@
         spotLight.angle = Math.PI/20;
         spotLight.exponent = 0;
         scene.add(spotLight);
+
+
+        // SCENE
+
+        scene.fog = new THREE.FogExp2( 0x999999, 0 );
  
         //LENS FLARE
         var textureFlare0 = THREE.ImageUtils.loadTexture( "textures/lensflare0.png" );
@@ -506,13 +510,17 @@
           break;
 
 			    case 70:
-			    if(fogOn){
-    				scene.fog = new THREE.FogExp2( 0xa5a5a5, 0.0025 );
-    				fogOn = false;
-	        } else {
-            fogOn = true;
-			      scene.fog = new THREE.FogExp2( 0xa5a5a5, 0.0 );
-          }
+            fogOn = !fogOn;
+            if(fogOn && activeCamera == cameraOrtho)
+              scene.fog.density = 1;
+            if(fogOn && activeCamera == cameraPerspective)
+              scene.fog.density = 0.00025;
+            if(fogOn && activeCamera == cameraFrogg)
+              scene.fog.density = 0.0025;
+            if(fogOn && activeCamera == cameraRotation)
+              scene.fog.density = 0.0025;
+
+            if(!fogOn) scene.fog.density = 0;
           break;
         }
 
