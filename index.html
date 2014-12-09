@@ -202,7 +202,7 @@
           
           //HELPER
       
-          object_helper = new THREE.Mesh( frogger, new THREE.MeshPhongMaterial( { ambient: 0xcc0000, color: 0xb20000, specular: 0x990000,shininess: 30, shading: THREE.SmoothShading} ) );
+          object_helper = new THREE.Mesh( frogger, new THREE.MeshLambertMaterial({color: 0xff0000, transparent: true, opacity: 0.0}) );
           object_helper.rotation.z = Math.PI;
           object_helper.position.z = -300;
           object_helper.position.y = 0;
@@ -495,8 +495,6 @@
           break;
         }
 
-        object_frogger.bb.vecMin = [object_frogger.position.x-150, object_frogger.position.y-300, object_frogger.position.z-1];
-        object_frogger.bb.vecMax = [object_frogger.position.x+150, object_frogger.position.y+300, object_frogger.position.z+1];
       }
         
       function onWindowResize() {
@@ -732,14 +730,14 @@
       }
 
 	function updateFrog(){
-		  object_frogger.bb.vecMin = [object_frogger.position.x-30, object_frogger.position.y-30, object_frogger.position.z-30];
-		  object_frogger.bb.vecMax = [object_frogger.position.x+30, object_frogger.position.y+30, object_frogger.position.z+30];    
+		  object_frogger.bb.vecMin = [object_frogger.position.x-50, object_frogger.position.y-50, object_frogger.position.z-50];
+		  object_frogger.bb.vecMax = [object_frogger.position.x+50, object_frogger.position.y+50, object_frogger.position.z+50];    
 	}	  
 	
 	function resetFrog(){
 		object_frogger.position.x = 0;
-		object_frogger.position.y = 0;
-		object_frogger.position.z = 0;
+		object_frogger.position.y = -800;
+		object_frogger.position.z = -275;
 	}
         
     </script>
