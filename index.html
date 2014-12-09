@@ -15,22 +15,32 @@
     <script src="three.min.js"></script>
 		<script src="OrbitControls.js"></script>
 
-    <script>      
+    <script>
+      ///////////////////////////////// GLOBAL VARS
       var cameraPerspective, cameraOrtho, cameraFrogg, cameraRotation, scene, renderer, composer;
+      var controls;
+      var object_frogger;
+      
+      //Geometry
       var mesh;
       var cars = [];
+      var turtles = [];
+      var timberLogs = [];
+
+      //Lights
       var directionalOn = true;
       var pointLightOn = true;
       var spotLightOn = true;
+      
+      //Special effects
       var fogOn = false;
-
-      var object_frogger;
+      ///// Particles
+      var particlesColors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
       var movementSpeed = 50;
       var totalObjects = 1000;
       var objectSize = 10;
       var sizeRandomness = 1000;
-      var particlesColors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
-      /////////////////////////////////
+
       var dirs = [];
       var parts = [];
       
@@ -39,12 +49,13 @@
       var totalLifes = 5;
       var totalPoints = 0;
       
+      ///////////////////////////////// "MAIN"
+
       init();
-      animate();           
+      animate();
 
-			var controls;
+      /////////////////////////////////
 
- 
       function BB() {
         this.vecMin = [0,0,0];
         this.vecMax = [0,0,0];
@@ -293,6 +304,7 @@
     			}
          
           initCars();
+          initTurtles();
          
       
           window.addEventListener( 'resize', onWindowResize, false);
@@ -542,6 +554,7 @@
 
         //dynamic objects update
         updateCars();
+        updateTurtles();
 			
         var pCount = parts.length;
         while(pCount--) {
@@ -554,14 +567,13 @@
         render();
         checkCollisions();
       }
-        
-        
+                
       function initCars() {
             
         var car = new THREE.BoxGeometry(50, 100, 50);
   
-        for (i = 0; i < 15; i++) {
-          object_car = new THREE.Mesh(car, new THREE.MeshPhongMaterial({
+        for (i = 0; i < 4; i++) {
+          var object_car = new THREE.Mesh(car, new THREE.MeshPhongMaterial({
             ambient: 0x0DDDDD, 
             color: 0xdddddd, 
             specular: 0x009900, 
@@ -572,17 +584,17 @@
           object_car.position.z = -275;
           object_car.moving = 0;
           //Lane1
-          if(i <= 2){
+          if(i == 0){
             object_car.position.y = -575;
             object_car.position.x = -510;
           }
           //Lane2
-          else if(i >= 3 && i <= 5){
+          else if(i == 1){
             object_car.position.y = -425;
             object_car.position.x = 510;
           }
           //Lane3
-          else if(i >= 9 && i <= 11){
+          else if(i == 2){
             object_car.position.y = -275;
             object_car.position.x = 510;
           }
@@ -596,7 +608,6 @@
           scene.add(object_car);
         }
       }
-
 
       function updateCars(){
         for(i = 0; i < cars.length; i++){
@@ -623,7 +634,73 @@
           }
         }
       }
-        
+      
+      function initTurtles() {
+        var turtle = new THREE.BoxGeometry(50, 100, 50);
+
+        for(i = 0; i < 15; i++) {
+          var object_turtle = new THREE.Mesh(turtle, new THREE.MeshPhongMaterial({
+            ambient: 0x004411,
+            color: 0x00DD22,
+            specular: 0x00FFAA,
+            shininess: 20,
+            shading: THREE.SmoothShading
+          }));
+          object_turtle.rotation.z = Math.PI;
+          object_turtle.position.z = -318;
+          object_turtle.moving = 0;
+
+          //Lane1
+          if(i == 0){
+            object_turtle.position.y = 225; //150 + 150/2.0
+            object_turtle.position.x = -510;
+          }
+          //Lane2
+          else if(i == 1){
+            object_turtle.position.y = 375; //previous + 150
+            object_turtle.position.x = 510;
+          }
+          //Lane3
+          else if(i == 2){
+            object_turtle.position.y = 525; //idem
+            object_turtle.position.x = 510;
+          }
+          //Lane4
+          else {
+            object_turtle.position.y = 675; //idem
+            object_turtle.position.x = -510;
+          }
+           
+          turtles.push(object_turtle);
+          scene.add(object_turtle);
+        }
+      }
+
+      function updateTurtles() {
+        for(i = 0; i < turtles.length; i++){
+          var turtle = turtles[i];
+          var row = turtle.position.y.toString()[1];
+
+          if(row % 2 == 0) {
+            turtle.position.x -= 5;
+
+            if(turtle.position.x < -560) {
+              scene.remove(turtle);
+              turtle.position.x = 560;
+              scene.add(turtle);
+            }
+          }
+          else {
+            turtle.position.x += 5;
+
+            if(turtle.position.x > 560) {
+              scene.remove(turtle);
+              turtle.position.x = -560;
+              scene.add(turtle);
+            }
+          }
+        }
+      }     
         
     </script>
 
