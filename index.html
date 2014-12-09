@@ -50,14 +50,7 @@
       var dirs = [];
       var parts = [];
       
-      ///////////////////////////////// "MAIN"
-
-      init();
-      animate();
-
-      /////////////////////////////////
-
-      function BB() {
+	function BB() {
         this.vecMin = [0,0,0];
         this.vecMax = [0,0,0];
       }
@@ -78,12 +71,21 @@
           this.vecMin[2] < b.vecMax[2]);
         //If not, it will return false
       };
+	  
+      ///////////////////////////////// "MAIN"
+
+      init();
+      animate();
+
+      /////////////////////////////////
+
+
 			
-			function render() {
+	function render() {
 				renderer.render( scene, activeCamera );
 			}
 			
-      function init() {
+    function init() {
           
           scene = new THREE.Scene();
           
@@ -316,6 +318,7 @@
       
           window.addEventListener( 'resize', onWindowResize, false);
           window.addEventListener('keydown', checkKeyPressed, false);
+		  window.addEventListener( 'mousedown', onclick, false );
           
       }
       // END OF INIT() --------------------------------------------------------------------------------
@@ -323,7 +326,6 @@
 
       function checkCollisions(){
         for (var i=0; i < numCars; i++) {
-          if(object_frogger.bb.collide(object_car[i].bb)){takeLifes()}
           if(object_frogger.bb.collide(cars[i].bb)){takeLifes()}
         }
            /* for (var i=0; i < numBuses; i++) {
@@ -502,7 +504,8 @@
           geometry.vertices.push( vertex );
           dirs.push({x:(Math.random() * movementSpeed)-(movementSpeed/2),y:(Math.random() * movementSpeed)-(movementSpeed/2),z:(Math.random() * movementSpeed)-(movementSpeed/2)});
         }
-        var material = new THREE.PointCloudMaterial( { size: objectSize,  color: particlesColors[Math.round(Math.random() * particlesColors.length)] ,map: THREE.ImageUtils.loadTexture("textures/particle.png"),blending: THREE.AdditiveBlending,transparent: true });
+		
+        var material = new THREE.PointCloudMaterial( { size: 100,  color: particlesColors[Math.round(Math.random() * particlesColors.length)] ,map: THREE.ImageUtils.loadTexture("textures/particle.png"),blending: THREE.AdditiveBlending,transparent: true });
         var particles = new THREE.PointCloud( geometry, material );
           
         this.object = particles;
@@ -571,8 +574,9 @@
         object_box.rotation.y += 0.005;
         object_box.position.z += 0.005;
 
+		checkCollisions();
         render();
-        checkCollisions();
+        
       }
                 
       function initCars() {
