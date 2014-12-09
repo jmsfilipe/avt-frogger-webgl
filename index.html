@@ -657,8 +657,8 @@
             }
           }
 
-          car.bb.vecMin = [car.position.x-50, car.position.y-50, car.position.z-50];
-          car.bb.vecMax = [car.position.x+50, car.position.y+50, car.position.z+50];
+          car.bb.vecMin = [car.position.x-30, car.position.y-30, car.position.z-30];
+          car.bb.vecMax = [car.position.x+30, car.position.y+30, car.position.z+30];
         }
       }
       
@@ -730,14 +730,15 @@
       }
 
 	function updateFrog(){
-		  object_frogger.bb.vecMin = [object_frogger.position.x-50, object_frogger.position.y-50, object_frogger.position.z-50];
-		  object_frogger.bb.vecMax = [object_frogger.position.x+50, object_frogger.position.y+50, object_frogger.position.z+50];    
+		  object_frogger.bb.vecMin = [object_frogger.position.x-30, object_frogger.position.y-30, object_frogger.position.z-30];
+		  object_frogger.bb.vecMax = [object_frogger.position.x+30, object_frogger.position.y+30, object_frogger.position.z+30];    
 	}	  
 	
 	function resetFrog(){
 		object_frogger.position.x = 0;
 		object_frogger.position.y = -800;
 		object_frogger.position.z = -275;
+		updateFrog();
 	}
         
     </script>
