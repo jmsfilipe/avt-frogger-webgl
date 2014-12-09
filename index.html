@@ -18,12 +18,17 @@
     <script>
       ///////////////////////////////// GLOBAL VARS
       var cameraPerspective, cameraOrtho, cameraFrogg, cameraRotation, scene, renderer, composer;
+      //Gameplay
       var controls;
       var object_frogger;
+      var totalLifes = 5;
+      var totalPoints = 0;
+      mapLimit = 1000;
       
       //Geometry
       var mesh;
       var cars = [];
+      var numCars = 4;
       var turtles = [];
       var timberLogs = [];
 
@@ -41,13 +46,9 @@
       var objectSize = 10;
       var sizeRandomness = 1000;
 
+
       var dirs = [];
       var parts = [];
-      
-      mapLimit = 1000;
-
-      var totalLifes = 5;
-      var totalPoints = 0;
       
       ///////////////////////////////// "MAIN"
 
@@ -59,6 +60,12 @@
       function BB() {
         this.vecMin = [0,0,0];
         this.vecMax = [0,0,0];
+      }
+
+      function takeLifes(){
+        object_frogger.reset();
+        totalLifes = totalLifes - 1;
+        //document.getElementById("lifes").innerHTML=totalLifes;
       }
 
       BB.prototype.collide = function(b) {
@@ -316,12 +323,12 @@
 
       function checkCollisions(){
         for (var i=0; i < numCars; i++) {
-          if(frog.bb.collide(cars1[i].bb)){takeLifes()}
-          if(frog.bb.collide(cars2[i].bb)){takeLifes()}
+          if(object_frogger.bb.collide(object_car[i].bb)){takeLifes()}
+          if(object_frogger.bb.collide(cars[i].bb)){takeLifes()}
         }
-        for (var i=0; i < numBuses; i++) {
-          if(frog.bb.collide(buses[i].bb)){takeLifes()}
-        }
+           /* for (var i=0; i < numBuses; i++) {
+                    if(frog.bb.collide(buses[i].bb)){takeLifes()}
+                } */
         
        /* //if on the river
         var col = true;
@@ -569,7 +576,6 @@
       }
                 
       function initCars() {
-            
         var car = new THREE.BoxGeometry(50, 100, 50);
   
         for (i = 0; i < 4; i++) {
@@ -583,6 +589,7 @@
           object_car.rotation.z = Math.PI;
           object_car.position.z = -275;
           object_car.moving = 0;
+          object_car.bb = new BB();
           //Lane1
           if(i == 0){
             object_car.position.y = -575;
@@ -632,6 +639,9 @@
               scene.add(car);
             }
           }
+
+          car.bb.vecMin = [car.position.x-1, car.position.y-1];
+          car.bb.vecMax = [car.position.x+1, car.position.y+1];
         }
       }
       
