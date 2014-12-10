@@ -30,14 +30,16 @@
 	    var height = 600; //viewport
 	    var width = 1024; //viewport
       var gameOver = false;
+      var numRows = 4;
+      var numTurtleRows = numLogRows = 2;
       
       //Geometry vars
       var mesh;
       var cars = [];
-      var numCars = 4;
+      var numCars = 15;
 
-      var numLogs = 2;
-      var numTurtles = 2;
+      var numLogs = 4;
+      var numTurtles = 8;
 
 
       var turtles = [];
@@ -157,12 +159,8 @@
         
         //River
         var river = new THREE.BoxGeometry(1050, 600, 5);
-        
         var material = new THREE.MeshPhongMaterial( { ambient: 0x0000ff, specular: 0x0000b2, shininess: 30, shading: THREE.SmoothShading, map: THREE.ImageUtils.loadTexture('textures/water2.jpg'), blending : THREE.AdditiveBlending, transparent: true} );
-        
         var object_River = new THREE.Mesh( river, material);
-
-
         object_River.rotation.z = Math.PI;
         object_River.position.z = -300;
         object_River.position.y = 450;
@@ -178,7 +176,6 @@
         scene.add(object_grass_End);
 
         //SafeSpot
-
         var SafeSpot = new THREE.BoxGeometry(1050, 200, 5);
         var object_safespot = new THREE.Mesh( SafeSpot, new THREE.MeshPhongMaterial( { ambient: 0x845321, specular: 0x73481d, shininess: 30, shading: THREE.SmoothShading, map: THREE.ImageUtils.loadTexture('textures/sidewalk.jpg')  } ) );
         object_safespot.rotation.z = Math.PI;
@@ -186,8 +183,7 @@
         object_safespot.position.y = 50;
         scene.add(object_safespot);
         
-        //Road
-        
+        //Road 
         var road = new THREE.BoxGeometry(1050, 600, 5);
         var object_Road = new THREE.Mesh( road, new THREE.MeshPhongMaterial( { ambient: 0x666666, specular: 0x595959, shininess: 30, shading: THREE.SmoothShading, map: THREE.ImageUtils.loadTexture('textures/road.jpg') } ) );
         object_Road.rotation.z = Math.PI;
@@ -196,10 +192,8 @@
         scene.add(object_Road);
         
         //Start
-        
         var start = new THREE.BoxGeometry(1050, 200, 5);
         object_Start = new THREE.Mesh( start, new THREE.MeshPhongMaterial( { ambient: 0x006600, specular: 0x005900, shininess: 30, shading: THREE.SmoothShading, map: THREE.ImageUtils.loadTexture('textures/grass.jpg')  } ) );
-
         object_Start.rotation.z = Math.PI;
         object_Start.position.z = -300;
         object_Start.position.y = -750;
@@ -376,24 +370,24 @@
           }
         
 
-          if(tim != "" 
-            || tur != "" ){
-
-            if(tur != ""){
+          if(tim != "" || tur != "" ) {
+            if(tur != "") {
               console.log("moving turtle")
               object_frogger.position.x -= 1;
-            } else{
+            } else {
               console.log("moving log")
-               object_frogger.position.x += 1;
+              object_frogger.position.x += 1;
             }
 
-          } else {console.log("morri"); takeLifes();}
+          } 
+          else
+            console.log("morri"); takeLifes();
         }
         
         if(object_frogger.position.y >= 800){
           resetFrog();
           addPoints();
-          }
+        }
       
       }       
         
@@ -623,7 +617,7 @@
       function initCars() {
         var car = new THREE.BoxGeometry(50, 100, 50);
   
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < numCars; i++) {
           var object_car = new THREE.Mesh(car, new THREE.MeshPhongMaterial({
             ambient: 0x0DDDDD, 
             color: 0xdddddd, 
@@ -635,25 +629,28 @@
           object_car.position.z = -275;
           object_car.moving = 0;
           object_car.bb = new BB();
+
+          var r = 150 * (numCars/numRows) * Math.random();
+
           //Lane1
-          if(i == 0){
+          if(i % numRows == 0) {
             object_car.position.y = -575;
-            object_car.position.x = -510;
+            object_car.position.x = -535 - r;
           }
           //Lane2
-          else if(i == 1){
+          else if(i % numRows == 1) {
             object_car.position.y = -425;
-            object_car.position.x = 510;
+            object_car.position.x = 535 + r;
           }
           //Lane3
-          else if(i == 2){
+          else if(i % numRows == 2) {
             object_car.position.y = -275;
-            object_car.position.x = 510;
+            object_car.position.x = 535 + r;
           }
           //Lane4
           else {
             object_car.position.y = -125;
-            object_car.position.x = -510;
+            object_car.position.x = -535 - r;
           }
            
           cars.push(object_car);
@@ -666,21 +663,23 @@
           var car = cars[i];
           var lane = car.position.y.toString()[1];
 
+          var r = 50 * (numCars/numRows) * Math.random();
+
           if(lane % 2 == 0) {
             car.position.x -= 5;
 
-            if(car.position.x < -515) {
+            if(car.position.x < -510 - 55 - (r * Math.random())) {
               scene.remove(car);
-              car.position.x = 510;
+              car.position.x = 510 + r;
               scene.add(car);
             }
           }
           else {
             car.position.x += 5;
 
-            if(car.position.x > 515) {
+            if(car.position.x > 510 + 55 + (r * Math.random())) {
               scene.remove(car);
-              car.position.x = -510;
+              car.position.x = -510 - r;
               scene.add(car);
             }
           }
@@ -706,16 +705,17 @@
           object_turtle.moving = 0;
           object_turtle.bb = new BB();
 
+          var r = 150 * (numTurtles/numTurtleRows) * Math.random();
 
           //Lane1
           if(i % 2 == 0) {
             object_turtle.position.y = 225; //150 + 150/2.0
-            object_turtle.position.x = -510;
+            object_turtle.position.x = -510 - r;
           }
           //Lane2
           else if(i % 2 == 1) {
             object_turtle.position.y = 525; //previous + (150 * 2)
-            object_turtle.position.x = 510;
+            object_turtle.position.x = 510 + r;
           }
            
           turtles.push(object_turtle);
@@ -728,21 +728,23 @@
           var turtle = turtles[i];
           var row = turtle.position.y.toString()[1];
 
+          var r = 50 * (numTurtles/numTurtleRows) * Math.random();
+
           if(row % 2 == 0) {
             turtle.position.x -= 1;
 
-            if(turtle.position.x < -515) {
+            if(turtle.position.x < -510 - 55 - (r * Math.random())) {
               scene.remove(turtle);
-              turtle.position.x = 510;
+              turtle.position.x = 510 + r;
               scene.add(turtle);
             }
           }
           else {
             turtle.position.x += 1;
 
-            if(turtle.position.x > 515) {
+            if(turtle.position.x > 510 + 55 + (r * Math.random())) {
               scene.remove(turtle);
-              turtle.position.x = -510;
+              turtle.position.x = -510 - r;
               scene.add(turtle);
             }
           }
@@ -769,16 +771,17 @@
           object_log.moving = 0;
           object_log.bb = new BB();
 
+          var r = 450 * (numLogs/numLogRows) * Math.random();
 
           //Lane1
           if(i % 2 == 0) {
             object_log.position.y = 375; //150 + 150/2.0
-            object_log.position.x = -510;
+            object_log.position.x = -510 - r;
           }
           //Lane2
           else if(i % 2 == 1) {
             object_log.position.y = 675; //previous + (150 * 2)
-            object_log.position.x = 510;
+            object_log.position.x = 510 + r;
           }
            
           timberLogs.push(object_log);
@@ -791,21 +794,23 @@
           var log = timberLogs[i];
           var row = log.position.y.toString()[1];
 
+          var r = 50 * (numLogs/numLogRows) * Math.random();
+
           if(row % 2 == 0) {
             log.position.x -= 1;
 
-            if(log.position.x < -515) {
+            if(log.position.x < -510 - 165 - (r * Math.random())) {
               scene.remove(log);
-              log.position.x = 510;
+              log.position.x = 510 + r;
               scene.add(log);
             }
           }
           else {
             log.position.x += 1;
 
-            if(log.position.x > 515) {
+            if(log.position.x > 510 + 165 + (r * Math.random())) {
               scene.remove(log);
-              log.position.x = -510;
+              log.position.x = -510 - r;
               scene.add(log);
             }
           }
