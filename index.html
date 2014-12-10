@@ -358,16 +358,16 @@
             if(object_frogger.bb.collide(turtles[i].bb)){col = true; break;} else {col = false;}
           }
           if(!col) takeLifes();
-
-
           }
+
           /*for (var i=0; i < numTurtles; i++) {
             if(!frog.bb.collide(turtles2[i].bb)){col = true; break;} else {col = false;}
           }
           if(!col) takeLifes();*/
-          
+
           for (var i=0; i < numLogs; i++) {
-            if(!object_frogger.bb.collide(turtles[i].bb)){col = true; break;} else {col = false;}
+            console.log("here");
+            if(!object_frogger.bb.collide(timberLogs[i].bb)){col = true; break;} else {col = false;}
           }
           if(!col) takeLifes();
           
@@ -391,12 +391,13 @@
           if(col){
             object_frogger.position.x -= 1;
           }
-        }
+        }*/
         
         if(object_frogger.position.y >= 800){
           resetFrog();
           addPoints();
-          }*/
+          }
+      
       }       
         
 		  function lensFlareUpdateCallback( object ) {
