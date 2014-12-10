@@ -29,6 +29,7 @@
       mapLimit = 1000;
 	    var height = 600; //viewport
 	    var width = 1024; //viewport
+      var gameOver = false;
       
       //Geometry vars
       var mesh;
@@ -76,6 +77,19 @@
 		    document.getElementById("points").innerHTML=totalPoints;
 	    }
 	
+      function restartGame() {
+        totalPoints =0;
+        totalLifes = 5;
+        gameOver = false;
+        document.getElementById("lifes").innerHTML=totalLifes;
+        document.getElementById("points").innerHTML=totalPoints;
+        document.getElementById("gameover").innerHTML="";
+      }
+
+      function endGame() {
+        document.getElementById("gameover").innerHTML="Game Over! Press 'r'";
+        gameOver = true;
+      }
 
       BB.prototype.collide = function(b) {
         //Check if Box1's max is greater than Box2's min and Box1's min is less than Box2's max (if they collide)
@@ -362,48 +376,19 @@
           }
         
 
-      if(tim != "" 
-        || tur != "" ){
+          if(tim != "" 
+            || tur != "" ){
 
-        if(tur != ""){
-          console.log("moving turtle")
-          object_frogger.position.x -= 1;
-        } else{
-          console.log("moving log")
-           object_frogger.position.x += 1;
+            if(tur != ""){
+              console.log("moving turtle")
+              object_frogger.position.x -= 1;
+            } else{
+              console.log("moving log")
+               object_frogger.position.x += 1;
+            }
+
+          } else {console.log("morri"); takeLifes();}
         }
-
-      } else {console.log("morri"); takeLifes();}
-    }
-
-          /*for (var i=0; i < numTurtles; i++) {
-            if(!frog.bb.collide(turtles2[i].bb)){col = true; break;} else {col = false;}
-          }
-          if(!col) takeLifes();*/
-
-
-          
-         /* for (var i=0; i < numLogs; i++) {
-            if(!frog.bb.collide(logs2[i].bb)){col = true; break;} else {col = false;}
-          }
-          if(!col) takeLifes();
-        }
-        
-        if(frog.y >= 350){
-          frog.reset();
-          if(col){
-            object_frogger.position.x -= 1;
-          }
-        }
-        
-        if(object_frogger.position.y >= 800){
-          resetFrog();
-
-
-          if(col){
-            object_frogger.position.x -= 1;
-          }
-        }*/
         
         if(object_frogger.position.y >= 800){
           resetFrog();
@@ -433,28 +418,28 @@
         switch(e.keyCode){
           // FROG MOVEMENT
           case 81: //Q
-          if(object_frogger.position.y < mapLimit -100){
+          if(object_frogger.position.y < mapLimit -100 && !gameOver){
             object_frogger.position.y += 100;
             object_helper.position.y += 100;
           }
           break;
 
           case 79: //O
-          if(object_frogger.position.x  > -mapLimit/2){
+          if(object_frogger.position.x  > -mapLimit/2 && !gameOver){
             object_frogger.position.x -= 50;
             object_helper.position.x -= 50;
           }
           break;
 
           case 65: //A
-          if(object_frogger.position.y  > - mapLimit  + 200){
+          if(object_frogger.position.y  > - mapLimit  + 200 && !gameOver){
             object_frogger.position.y -= 100;
             object_helper.position.y -= 100;
           }
           break;
 
           case 80: //P
-          if(object_frogger.position.x  < mapLimit/2){
+          if(object_frogger.position.x  < mapLimit/2 && !gameOver){
             object_frogger.position.x += 50;
             object_helper.position.x += 50;
           }
@@ -530,6 +515,9 @@
               scene.fog.density = 0.0025;
 
             if(!fogOn) scene.fog.density = 0;
+          break;
+          case 82:
+          restartGame();
           break;
         }
 
@@ -626,6 +614,7 @@
         object_box.rotation.y += 0.005;
         object_box.position.z += 0.005;
 
+        if(totalLifes < 1) endGame();
         updateFrog();
 		    checkCollisions();
         render(); 
@@ -840,7 +829,7 @@
         
     </script>
 
-	<p><span class="auto-style1">Points: <span id="points">0</span>&nbsp&nbsp&nbsp&nbsp&nbspLifes: <span id="lifes">5</span></span></p>
+	<p><span class="auto-style1">Points: <span id="points">0</span>&nbsp&nbsp&nbsp&nbsp&nbspLifes: <span id="lifes">5</span>&nbsp&nbsp&nbsp&nbsp&nbsp<span id="gameover"></span></span></p>
 
 
     </body>
