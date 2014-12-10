@@ -349,27 +349,39 @@
           if(object_frogger.bb.collide(cars[i].bb)){takeLifes()}
         }
         
-
        //if on the river
-        var col = true;
+        var tur = "", tim = "";
         if(object_frogger.position.y > 150 && object_frogger.position.y < 800){
           
           for (var i=0; i < numTurtles; i++) {
-            if(object_frogger.bb.collide(turtles[i].bb)){col = true; break;} else {col = false;}
+            if(object_frogger.bb.collide(turtles[i].bb)){tur = turtles[i]; console.log("hit turtle"); break;} else {tur = "";}
           }
-          if(!col) takeLifes();
+          
+          for (var i=0; i < numLogs; i++) {
+            if(object_frogger.bb.collide(timberLogs[i].bb)){tim = timberLogs[i];console.log("hit log"); break;} else {tim = "";}
           }
+        
+
+      if(tim != "" 
+        || tur != "" ){
+
+        if(tur != ""){
+          console.log("moving turtle")
+          object_frogger.position.x -= 1;
+        } else{
+          console.log("moving log")
+           object_frogger.position.x += 1;
+        }
+
+      } else {console.log("morri"); takeLifes();}
+    }
 
           /*for (var i=0; i < numTurtles; i++) {
             if(!frog.bb.collide(turtles2[i].bb)){col = true; break;} else {col = false;}
           }
           if(!col) takeLifes();*/
 
-          for (var i=0; i < numLogs; i++) {
-            console.log("here");
-            if(!object_frogger.bb.collide(timberLogs[i].bb)){col = true; break;} else {col = false;}
-          }
-          if(!col) takeLifes();
+
           
          /* for (var i=0; i < numLogs; i++) {
             if(!frog.bb.collide(logs2[i].bb)){col = true; break;} else {col = false;}
@@ -424,7 +436,6 @@
           if(object_frogger.position.y < mapLimit -100){
             object_frogger.position.y += 100;
             object_helper.position.y += 100;
-			      updateFrog();
           }
           break;
 
@@ -432,7 +443,6 @@
           if(object_frogger.position.x  > -mapLimit/2){
             object_frogger.position.x -= 50;
             object_helper.position.x -= 50;
-			      updateFrog();
           }
           break;
 
@@ -440,7 +450,6 @@
           if(object_frogger.position.y  > - mapLimit  + 200){
             object_frogger.position.y -= 100;
             object_helper.position.y -= 100;
-			      updateFrog();
           }
           break;
 
@@ -448,7 +457,6 @@
           if(object_frogger.position.x  < mapLimit/2){
             object_frogger.position.x += 50;
             object_helper.position.x += 50;
-			      updateFrog();
           }
           break;
 
@@ -618,6 +626,7 @@
         object_box.rotation.y += 0.005;
         object_box.position.z += 0.005;
 
+        updateFrog();
 		    checkCollisions();
         render(); 
       }
@@ -731,7 +740,7 @@
           var row = turtle.position.y.toString()[1];
 
           if(row % 2 == 0) {
-            turtle.position.x -= 3;
+            turtle.position.x -= 1;
 
             if(turtle.position.x < -515) {
               scene.remove(turtle);
@@ -740,7 +749,7 @@
             }
           }
           else {
-            turtle.position.x += 3;
+            turtle.position.x += 1;
 
             if(turtle.position.x > 515) {
               scene.remove(turtle);
@@ -794,7 +803,7 @@
           var row = log.position.y.toString()[1];
 
           if(row % 2 == 0) {
-            log.position.x -= 3;
+            log.position.x -= 1;
 
             if(log.position.x < -515) {
               scene.remove(log);
@@ -803,7 +812,7 @@
             }
           }
           else {
-            log.position.x += 3;
+            log.position.x += 1;
 
             if(log.position.x > 515) {
               scene.remove(log);
@@ -812,8 +821,8 @@
             }
           }
 
-          log.bb.vecMin = [log.position.x-30, log.position.y-30, log.position.z-30];
-          log.bb.vecMax = [log.position.x+30, log.position.y+30, log.position.z+30];
+          log.bb.vecMin = [log.position.x-50, log.position.y-50, log.position.z-30];
+          log.bb.vecMax = [log.position.x+50, log.position.y+50, log.position.z+30];
 
         }
       }
@@ -827,7 +836,6 @@
     		object_frogger.position.x = 0;
     		object_frogger.position.y = -800;
     		object_frogger.position.z = -275;
-    		updateFrog();
     	}
         
     </script>
