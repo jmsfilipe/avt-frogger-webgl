@@ -17,6 +17,8 @@
   <body>
     <script src="three.min.js"></script>
 		<script src="OrbitControls.js"></script>
+    <script src="StereoEffect.js"></script>
+    <script src="DeviceOrientationControls.js"></script>
 
     <script>
       ///////////////////////////////// GLOBAL VARS
@@ -146,38 +148,6 @@
         scene.add(cameraRotation);
 
         activeCamera = cameraOrtho;
-        
-        var urls = [
-  'textures/cube/negy.jpg',
-  'textures/cube/negx.jpg',
-  'textures/cube/negz.jpg',
-  'textures/cube/posz.jpg',
-  'textures/cube/posx.jpg',
-  'textures/cube/posy.jpg'
-];
-
-var cubemap = THREE.ImageUtils.loadTextureCube(urls); // load textures
-cubemap.format = THREE.RGBFormat;
-
-var shader = THREE.ShaderLib['cube']; // init cube shader from built-in lib
-shader.uniforms['tCube'].value = cubemap; // apply textures to shader
-
-// create shader material
-var skyBoxMaterial = new THREE.ShaderMaterial( {
-  fragmentShader: shader.fragmentShader,
-  vertexShader: shader.vertexShader,
-  uniforms: shader.uniforms,
-  depthWrite: false,
-  side: THREE.BackSide
-});
-
-// create skybox mesh
-var skybox = new THREE.Mesh(
-  new THREE.CubeGeometry(1000, 1000, 1000),
-  skyBoxMaterial
-);
-
-scene.add(skybox);
 
         //OBJECTS / MATERIALS---------------------------------------------------------------------------------------------------------------------
         var boxGeo= new THREE.BoxGeometry( 200, 200, 200 );
@@ -245,7 +215,7 @@ scene.add(skybox);
         
         //HELPER
     
-        object_helper = new THREE.Mesh( frogger, new THREE.MeshLambertMaterial({envMap: cubemap, color: 0xff0000, transparent: true, opacity: 0.0}) );
+        object_helper = new THREE.Mesh( frogger, new THREE.MeshLambertMaterial({color: 0xff0000, transparent: true, opacity: 0.0}) );
         object_helper.rotation.z = Math.PI;
         object_helper.position.z = -300;
         object_helper.position.y = 0;
