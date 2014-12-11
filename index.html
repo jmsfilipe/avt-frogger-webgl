@@ -151,6 +151,38 @@
 
         activeCamera = cameraOrtho;
         
+        var urls = [
+  'textures/cube/posx.jpg',
+  'textures/cube/negx.jpg',
+  'textures/cube/posy.jpg',
+  'textures/cube/negy.jpg',
+  'textures/cube/posz.jpg',
+  'textures/cube/negz.jpg'
+];
+
+var cubemap = THREE.ImageUtils.loadTextureCube(urls); // load textures
+cubemap.format = THREE.RGBFormat;
+
+var shader = THREE.ShaderLib['cube']; // init cube shader from built-in lib
+shader.uniforms['tCube'].value = cubemap; // apply textures to shader
+
+// create shader material
+var skyBoxMaterial = new THREE.ShaderMaterial( {
+  fragmentShader: shader.fragmentShader,
+  vertexShader: shader.vertexShader,
+  uniforms: shader.uniforms,
+  depthWrite: false,
+  side: THREE.BackSide
+});
+
+// create skybox mesh
+var skybox = new THREE.Mesh(
+  new THREE.CubeGeometry(1000, 1000, 1000),
+  skyBoxMaterial
+);
+
+scene.add(skybox);
+
         //OBJECTS / MATERIALS---------------------------------------------------------------------------------------------------------------------
         var boxGeo= new THREE.BoxGeometry( 200, 200, 200 );
         
@@ -217,7 +249,7 @@
         
         //HELPER
     
-        object_helper = new THREE.Mesh( frogger, new THREE.MeshLambertMaterial({color: 0xff0000, transparent: true, opacity: 0.0}) );
+        object_helper = new THREE.Mesh( frogger, new THREE.MeshLambertMaterial({envMap: cubemap, color: 0xff0000, transparent: true, opacity: 0.0}) );
         object_helper.rotation.z = Math.PI;
         object_helper.position.z = -300;
         object_helper.position.y = 0;
@@ -323,23 +355,6 @@
   			
   			addLight( 0.55, 0.9, 0.5, 0, 500, -100 );
 
-        var urlPrefix = "textures/cube/";
-        var urls = [ urlPrefix + "posx.jpg", urlPrefix + "negx.jpg",
-            urlPrefix + "posy.jpg", urlPrefix + "negy.jpg",
-            urlPrefix + "posz.jpg", urlPrefix + "negz.jpg" ];
-        var textureCube = THREE.ImageUtils.loadTextureCube( urls );
-
-        var textureCube = THREE.ImageUtils.loadTextureCube( urls );
-        var shader  = THREE.ShaderLib['normalmap'];
-        shader.uniforms["tNormal"].value = textureCube;
-        var material = new THREE.ShaderMaterial({
-            fragmentShader  : shader.fragmentShader,
-            vertexShader    : shader.vertexShader,
-            uniforms    : shader.uniforms
-        });
-
-        skybox  = new THREE.Mesh( new THREE.CubeGeometry( 100000, 100000, 100000, 1, 1, 1, null, true ), material );
-        scene.addObject( skybox );
 
   			function addLight( h, s, l, x, y, z ) {
   				var light = new THREE.PointLight( 0xffffff, 1.5, 4500 );
