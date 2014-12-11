@@ -329,18 +329,17 @@
             urlPrefix + "posz.jpg", urlPrefix + "negz.jpg" ];
         var textureCube = THREE.ImageUtils.loadTextureCube( urls );
 
-
-        var shader  = THREE.ShaderUtils.lib["cube"];
-          shader.uniforms["tCube"].texture = textureCube;
-          var material = new THREE.MeshShaderMaterial({
+        var textureCube = THREE.ImageUtils.loadTextureCube( urls );
+        var shader  = THREE.ShaderLib['normalmap'];
+        shader.uniforms["tNormal"].value = textureCube;
+        var material = new THREE.ShaderMaterial({
             fragmentShader  : shader.fragmentShader,
-            vertexShader  : shader.vertexShader,
-            uniforms  : shader.uniforms
-          });
+            vertexShader    : shader.vertexShader,
+            uniforms    : shader.uniforms
+        });
 
-        skyboxMesh  = new THREE.Mesh( new THREE.CubeGeometry( 100000, 100000, 100000, 1, 1, 1, null, true ), material );
-
-        scene.addObject( skyboxMesh );
+        skybox  = new THREE.Mesh( new THREE.CubeGeometry( 100000, 100000, 100000, 1, 1, 1, null, true ), material );
+        scene.addObject( skybox );
 
   			function addLight( h, s, l, x, y, z ) {
   				var light = new THREE.PointLight( 0xffffff, 1.5, 4500 );
