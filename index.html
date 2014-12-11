@@ -54,7 +54,7 @@
       var fogOn = false;
       ///// Particles
       var particlesColors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
-      var movementSpeed = 50;
+      var movementSpeed = 25;
       var totalObjects = 1000;
       var objectSize = 10;
       var sizeRandomness = 1000;
@@ -76,6 +76,10 @@
 	  
 	    function addPoints() {
 		    totalPoints += 10;
+        parts.push(new ExplodeAnimation((Math.random() * sizeRandomness)-(sizeRandomness/2), (Math.random() * sizeRandomness)-(sizeRandomness/2)));
+        parts.push(new ExplodeAnimation((Math.random() * sizeRandomness)-(sizeRandomness/2), (Math.random() * sizeRandomness)-(sizeRandomness/2)));
+        parts.push(new ExplodeAnimation((Math.random() * sizeRandomness)-(sizeRandomness/2), (Math.random() * sizeRandomness)-(sizeRandomness/2)));
+        parts.push(new ExplodeAnimation((Math.random() * sizeRandomness)-(sizeRandomness/2), (Math.random() * sizeRandomness)-(sizeRandomness/2)));
 		    document.getElementById("points").innerHTML=totalPoints;
 	    }
 	
@@ -346,7 +350,6 @@
     
         window.addEventListener( 'resize', onWindowResize, false);
         window.addEventListener('keydown', checkKeyPressed, false);
-		    window.addEventListener( 'mousedown', onclick, false );
           
       }
       // END OF INIT() --------------------------------------------------------------------------------
@@ -380,11 +383,11 @@
             }
 
           } 
-          else
-            console.log("morri"); takeLifes();
+          else {
+            console.log("morri"); takeLifes();}
         }
         
-        if(object_frogger.position.y >= 800){
+        if(object_frogger.position.y >= 850){
           resetFrog();
           addPoints();
         }
@@ -563,12 +566,6 @@
             this.object.geometry.verticesNeedUpdate = true;
           }
         }          
-      }
-        
-      //quando chegar ao fim do Jogo
-      function onclick() {
-        event.preventDefault();
-        parts.push(new ExplodeAnimation((Math.random() * sizeRandomness)-(sizeRandomness/2), (Math.random() * sizeRandomness)-(sizeRandomness/2)));
       }
         
       function animate() {
