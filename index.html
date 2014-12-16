@@ -121,7 +121,7 @@
 
         //CAMERAS-----------------------------------------------------------------------------------------------------------------------------------
       cameraPerspective = new THREE.PerspectiveCamera(90, 1, 0.001, 700);
-      cameraPerspective.position.set(0, 10, 0);
+      cameraPerspective.position.set(0, -775, -220);
       scene.add(cameraPerspective);
 
         //OBJECTS / MATERIALS---------------------------------------------------------------------------------------------------------------------
@@ -321,9 +321,15 @@
       controls = new THREE.OrbitControls(cameraPerspective, element);
       controls.rotateUp(Math.PI / 4);
       controls.target.set(
+        
+
+
         cameraPerspective.position.x + 0.1,
         cameraPerspective.position.y,
         cameraPerspective.position.z
+          //object_frogger.position.x = 0;
+        //object_frogger.position.y = -800;
+        //object_frogger.position.z = -275;
       );
       controls.noZoom = true;
       controls.noPan = true;
