@@ -717,10 +717,26 @@
       }
 
       function updateFrog(){
-        object_frogger.bb.vecMin = [object_frogger.position.x-30, object_frogger.position.y-30, object_frogger.position.z-30];
-        object_frogger.bb.vecMax = [object_frogger.position.x+30, object_frogger.position.y+30, object_frogger.position.z+30];    
+
+
+        if (object_frogger.position.y<=-500){
+
+          object_frogger.position.y+=1;
+
+          object_frogger.position.x+=1;
+
+        }
+
+        else {
+
+          object_frogger.position.x-=1;
+          object_frogger.position.y+=1;
+
+        }
+  
       }   
-      
+
+   
       function resetFrog(){
         object_frogger.position.x = 0;
         object_frogger.position.y = -800;
