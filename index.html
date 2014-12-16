@@ -368,7 +368,7 @@
         object.lensFlares[ 3 ].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad( 45 );
       }
       
-    function checkCollisions(){
+    /*function checkCollisions(){
         for (var i=0; i < numCars; i++) {
           if(object_frogger.bb.collide(cars[i].bb)){takeLifes()}
         }
@@ -405,7 +405,7 @@
           addPoints();
         }
       
-      }       
+      }     */  
 
         
       function ExplodeAnimation(x,y) {
@@ -496,7 +496,7 @@
 
         if(totalLifes < 1) endGame();
         updateFrog();
-        checkCollisions();
+        //checkCollisions();
 
 
       update(clock.getDelta());
