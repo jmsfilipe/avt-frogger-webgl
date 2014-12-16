@@ -122,6 +122,7 @@
         //CAMERAS-----------------------------------------------------------------------------------------------------------------------------------
       cameraPerspective = new THREE.PerspectiveCamera(90, 1, 0.001, 700);
       cameraPerspective.position.set(0, -775, -220);
+      //cameraPerspective.position.set(object_frogger.position.x, object_frogger.position.y, object_frogger.position.z);
       scene.add(cameraPerspective);
 
         //OBJECTS / MATERIALS---------------------------------------------------------------------------------------------------------------------
@@ -187,6 +188,7 @@
         object_frogger.bb = new BB();
 
         scene.add(object_frogger);
+        //cameraPerspective.position.set(object_frogger.position.x, object_frogger.position.y, object_frogger.position.z);
         
         //HELPER
     
@@ -327,6 +329,8 @@
         cameraPerspective.position.x + 0.1,
         cameraPerspective.position.y,
         cameraPerspective.position.z
+
+
           //object_frogger.position.x = 0;
         //object_frogger.position.y = -800;
         //object_frogger.position.z = -275;
@@ -355,7 +359,7 @@
       window.addEventListener('resize', resize, false);
       //window.addEventListener('keydown', checkKeyPressed, false);
       setTimeout(resize, 1);
-    }
+    }   // END INIT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
       function lensFlareUpdateCallback( object ) {
         var f, fl = object.lensFlares.length;
@@ -502,6 +506,7 @@
 
         if(totalLifes < 1) endGame();
         updateFrog();
+        cameraPerspective.position.set(object_frogger.position.x, object_frogger.position.y, object_frogger.position.z);
         //checkCollisions();
 
 
@@ -733,6 +738,8 @@
           object_frogger.position.y+=1;
 
         }
+
+        //cameraPerspective.position.set(object_frogger.position.x, object_frogger.position.y, object_frogger.position.z);
   
       }   
 
