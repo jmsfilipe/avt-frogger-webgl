@@ -721,18 +721,17 @@
       function updateFrog(){
 
 
-        if (object_frogger.position.y<=-500){
+        if (object_frogger.position.y<=600){
 
           object_frogger.position.y+=1;
 
-          object_frogger.position.x+=1;
+          object_frogger.position.x+=0.1;
 
         }
 
         else {
 
-          object_frogger.position.x-=1;
-          object_frogger.position.y+=1;
+          resetFrog();
 
         }
 
