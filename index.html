@@ -469,12 +469,13 @@
     }
 
     function render(dt) {
-      cameraPerspective.position.set(object_frogger.position.x, object_frogger.position.y, object_frogger.position.z);
+      cameraPerspective.position.set(object_frogger.position.x, object_frogger.position.y-5, object_frogger.position.z+60);
+	   //cameraPerspective.up.set(0,0,1);
       effect.render(scene, cameraPerspective);
       controls.target.set(
         object_frogger.position.x ,
-        object_frogger.position.y,
-        object_frogger.position.z
+        object_frogger.position.y+100,
+        object_frogger.position.z+50
       );
     }
 

@@ -110,7 +110,7 @@ THREE.DeviceOrientationControls = function(object) {
       // form a set of intrinsic Tait-Bryan angles of type Z-X'-Y''
 
       // 'ZXY' for the device, but 'YXZ' for us
-      euler.set(this.beta, this.alpha, - this.gamma, 'YXZ');
+      euler.set(this.beta, this.alpha*0.1, - this.gamma, 'YXZ');
 
       quaternion.setFromEuler(euler);
       quaternionLerp.slerp(quaternion, 0.5); // interpolate
