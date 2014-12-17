@@ -122,6 +122,7 @@
         //CAMERAS-----------------------------------------------------------------------------------------------------------------------------------
       cameraPerspective = new THREE.PerspectiveCamera(90, 1, 0.001, 700);
       cameraPerspective.position.set(0, -775, -220);
+      cameraPerspective.up.set(0,0,1);
       //cameraPerspective.position.set(object_frogger.position.x, object_frogger.position.y, object_frogger.position.z);
       scene.add(cameraPerspective);
 
@@ -323,17 +324,7 @@
       controls = new THREE.OrbitControls(cameraPerspective, element);
       controls.rotateUp(Math.PI / 4);
       controls.target.set(
-        
-
-
-        cameraPerspective.position.x + 0.1,
-        cameraPerspective.position.y,
-        cameraPerspective.position.z
-
-
-          //object_frogger.position.x = 0;
-        //object_frogger.position.y = -800;
-        //object_frogger.position.z = -275;
+        cameraPerspective.position.x,cameraPerspective.position.y,cameraPerspective.position.z
       );
       controls.noZoom = true;
       controls.noPan = true;
@@ -478,7 +469,13 @@
     }
 
     function render(dt) {
+      cameraPerspective.position.set(object_frogger.position.x, object_frogger.position.y, object_frogger.position.z);
       effect.render(scene, cameraPerspective);
+      controls.target.set(
+        object_frogger.position.x ,
+        object_frogger.position.y,
+        object_frogger.position.z
+      );
     }
 
     function animate(t) {
@@ -506,9 +503,8 @@
 
         if(totalLifes < 1) endGame();
         updateFrog();
-        cameraPerspective.position.set(object_frogger.position.x, object_frogger.position.y, object_frogger.position.z);
-        //checkCollisions();
 
+        //checkCollisions();
 
       update(clock.getDelta());
       render(clock.getDelta());
